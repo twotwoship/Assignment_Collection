@@ -12,7 +12,7 @@ This repository contains assignments and practice projects related to:
 | Category | Description |
 |-----------|-------------|
 | DataStructure | Stack, Queue, Linked List |
-| Algorithm | BOJ problem solutions |
+| Algorithm | - |
 | Linux | Linux and system programming assignments |
 | Embedded | STM32, BBB, and embedded projects |
 
