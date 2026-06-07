@@ -9,12 +9,10 @@ This repository contains assignments and practice projects related to:
 
 ## Directory Structure
 
-| Category | Description |
-|-----------|-------------|
-| DataStructure | Stack, Queue, Linked List |
-| Algorithm | BOJ problem solutions |
-| Linux | Linux and system programming assignments |
-| Embedded | STM32, BBB, and embedded projects |
+- DataStructure
+- Algorithm
+- Linux
+- Embedded
 
 ## Author
 
