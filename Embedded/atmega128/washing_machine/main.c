@@ -55,12 +55,10 @@ ISR(TIMER0_OVF_vect){		//1ms timer
 
 int main(void)
 {
-	//init_timer2();
 	init_fnd();
 	init_motor_diver();
 	init_button();
 	init_timer3_pwm();
-	//init_ultrasonic();
 	init_led();
 	init_timer0();
 	init_uart();
@@ -68,11 +66,9 @@ int main(void)
 	sei();	// 전역(대문) interrrupt 허용
 	
 	_washing_machine_standby_mode_main();
-	//dc_motor_pwm_control_main();
     while (1) 
     {
-		//pc_command_processing();
-		//ultrasonic_processing();
+
     }
 }
 /*

@@ -46,6 +46,7 @@ extern volatile int rinse_check;
 extern volatile int dehydration_check;
 
 char _r[] = "\r\n";
+int _d_forward = 0;
 
 void (*washing_command_queue[]) () = {
 	start_on,
@@ -211,7 +212,7 @@ void _washing_mode_func(void){
 		washing_command();
 		if(standby_mode == mode_stand){	break; }
 		if(get_button(BUTTON0, BUTTON0PIN)){	standby_mode = mode_stand; break;	}
-		if(washing_check >= 1000){ washing_check = 0; washing_time--;	}
+		if(washing_check > 1000){ washing_check = 0; washing_time--;	}
 	}	if(washing_time <= 0){	standby_mode = mode_rinse; }
 }
 
@@ -231,13 +232,20 @@ void _rinse_mode_func(void){
 				washing_command();
 				if(standby_mode == mode_stand){	break; }
 		if(get_button(BUTTON0, BUTTON0PIN)){	standby_mode = mode_stand; break;	}
-		if(rinse_check >= 1000){ rinse_check = 0; rinse_time--; }
+		if(rinse_check > 1000){ rinse_check = 0; rinse_time--; }
 	}	if(rinse_time <= 0){standby_mode = mode_dehydration; }
 }
 
 void _dehydration_mode_func(void){
 	char _buff[] = "dehydration_mode : ";
 	int pre_time = 0;
+	_d_forward = !_d_forward;
+	PORTF &= ~(1 << 6 | 1 << 7);
+	if(_d_forward){
+		PORTF |= 1 << 6;
+		}else{
+		PORTF |= 1 << 7;
+	}
 	while(dehydration_time > 0){ // 1초가 지나야지 줄어들게 끔 설정해야됨.
 		fnd_washing_machine(dehydration_time);
 		if(pre_time != dehydration_time){
@@ -251,8 +259,15 @@ void _dehydration_mode_func(void){
 		washing_command();
 		if(standby_mode == mode_stand){	break; }
 		if(get_button(BUTTON0, BUTTON0PIN)){	standby_mode = mode_stand;  break;		}
-		if(dehydration_check >= 1000){ dehydration_check = 0; dehydration_time--;	}
+		if(dehydration_check > 1000){ dehydration_check = 0; dehydration_time--;	}
 	}	if(dehydration_time <= 0){standby_mode = mode_stand;}
+		_d_forward = !_d_forward;
+		PORTF &= ~(1 << 6 | 1 << 7);
+		if(_d_forward){
+			PORTF |= 1 << 6;
+			}else{
+			PORTF |= 1 << 7;
+		}
 }
 
 void _washing_setting_mode_func(void){		// 세탁 시간 설정모드에서 bottom2를 누르면 세탁시간이 1초씩 늘어나게 하기.
@@ -261,7 +276,7 @@ void _washing_setting_mode_func(void){		// 세탁 시간 설정모드에서 bott
 	while(1){
 		fnd_washing_machine(washing_time);
 		PORTA=0x01;
-		if(get_button(BUTTON2, BUTTON2PIN)){	washing_time += 60;	}
+		if(get_button(BUTTON2, BUTTON2PIN)){	washing_time += 5;	}
 		if(get_button(BUTTON1, BUTTON1PIN)){	break;	}
 		if(pre_time != washing_time){
 			UART0_print_string(_buff);
@@ -279,7 +294,7 @@ void _rinse_setting_mode_func(void){
 		fnd_washing_machine(rinse_time);
 
 		PORTA=0x02;
-		if(get_button(BUTTON2, BUTTON2PIN)){	rinse_time += 60;	}
+		if(get_button(BUTTON2, BUTTON2PIN)){	rinse_time += 5;	}
 		if(get_button(BUTTON1, BUTTON1PIN)){	break;	}
 		if(pre_time != rinse_time){
 			UART0_print_string(_buff);
@@ -297,7 +312,7 @@ void _dehydration_setting_mode_func(void){
 		fnd_washing_machine(dehydration_time);
 
 		PORTA=0x04;
-		if(get_button(BUTTON2, BUTTON2PIN)){	dehydration_time += 60;	}
+		if(get_button(BUTTON2, BUTTON2PIN)){	dehydration_time += 5;	}
 		if(get_button(BUTTON1, BUTTON1PIN)){	standby_mode = mode_stand; break;	}
 		if(pre_time != dehydration_time){
 			UART0_print_string(_buff);

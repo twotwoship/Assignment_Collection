@@ -23,7 +23,7 @@ extern int run_select;
 extern volatile int washing_time;
 extern volatile int rinse_time;	
 extern volatile int dehydration_time;	
-
+extern int _d_forward;
 void fnd_main(void){
 	fnd_display(sec_count, dot_display);
 	/*
@@ -117,11 +117,17 @@ void fnd_washing_machine(int mechine_time){
 }
 
 void fnd_washing_work(int mechine_time){ // 초단위로 들어옴 1분이상일땐 1분단위로 1분 아래일땐 초단위로
-	uint8_t turn_table_font[] = {0xf7, 0xf9, 0xfe, 0xcf};
+	uint8_t turn_table_font[] = {0xf7, 0xf9, 0xfe, 0xcf}; // 0 1 2 3
 	uint8_t fnd_font[] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xd8, 0x80, 0x98, 0x7f};
 		static int digit_select = 0;	// 자리수 선택
 		static int table_select = 0;	// 자리수 선택
 		int temp = turn_select % 4;
+		if(_d_forward){ // 0 1 2 3이 3 2 1 0 으로 되게 해야됨 어케?
+			turn_table_font[0] = 0xcf;
+				turn_table_font[1] = 0xfe;
+					turn_table_font[2] = 0xf9;
+						turn_table_font[3] = 0xf7;
+		}
 		if(mechine_time >= 60){	// 1분이상 남앗을때
 		switch(digit_select){
 			case 0:	//10^0
