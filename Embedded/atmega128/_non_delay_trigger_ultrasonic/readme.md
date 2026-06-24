@@ -3,9 +3,7 @@ used function
 Ignore the comments.
 
 
-
-
-
+```c
 void \_non\_delay\_left\_make\_trigger\_processing(void){ // 딜레이 함수 쓰지 않고 초음파 쏘기 좌 통합
 
 &#x09;// 어떻게 돌아가야하냐면 하이상태를 15us 유지하고 로우로 내려야됨.
@@ -96,5 +94,5 @@ ISR(TIMER2\_OVF\_vect){		// 16us timer 오버플로발생해서 저시간마다 
 
 &#x09;	}
 
-
+```
 
