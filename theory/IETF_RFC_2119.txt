@@ -1,0 +1,35 @@
+rfc 2119에서 사용하는 개념들
+
+
+크게 4개가 있음.
+must | must not | should | should not
+
+1. must
+required 또는 shall과 동일함.
+무저저저저적권 해야됨 / 초록불일때 신호 건너기
+
+2. must not
+shall out 과 동일함.
+저어어어얼대로 하면 안됨. / 콘센트에 젓가락 꽂기
+
+3. should
+recommended 와 동일함.
+특별한 이유가 없으면 하는게 맞는데 어지간하면 해라. / 추우면 옷을 따뜻하게 입어라.
+
+4. should not
+not recommended 와 동일함.
+특별한 이유가 없으면 하지 않는게 맞는데 어지간하면 하지마라. / 난간 엉덩이로 타고 내려오지 않기.
+
+5. may
+optional 와 동일함.
+하던가 말던가 구현해도 구현하지 않은 것과 상호작용 가능해야됨.
+
+tcg opal 에서 기능의 분류
+
+mandatory = shall
+
+optional = may // 구현시 검증
+
+excluded = shall not
+
+not required = may // 구현시 검증 안함
