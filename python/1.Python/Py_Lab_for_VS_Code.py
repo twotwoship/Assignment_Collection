@@ -1431,11 +1431,11 @@
 # [8-7-1] 모든 값을 제곱하여 list에 저장하기 => lambda와 map 활용
 ############################################################
 
-t = (1, 3, 7, 2, 6, 8)
+# t = (1, 3, 7, 2, 6, 8)
 
-l = (int(a) * int(a) for a in t)
+# l = (int(a) * int(a) for a in t)
 
-print(*l)
+# print(*l)
 
 ############################################################
 # [8-7-2] 모든 값을 제곱하여 list에 저장하기 => generator expression 활용
@@ -2207,25 +2207,25 @@ print(*l)
 
 # import my_package.my_module as mm
 # print(mm.add(3,4), mm.sub(3,4))
-# 
+
 # from my_package import my_module as mm
 # print(mm.add(3,4), mm.sub(3,4))
-# 
+
 # from my_package.my_module import add, sub
 # print(add(3,4), sub(3,4))
-# 
+
 # from my_package.my_module import *
 # print(add(3,4), sub(3,4))
-# 
+
 # import sys
 # sys.path.append(r'.\my_package\files')
-# 
+
 # import my_module2 as mm2
 # sys.path.pop()
-# 
+
 # print(mm2.add(3,4), mm2.sub(3,4))
 
-############################################################
+# ############################################################
 # [12-1] 함수를 이용한 마트 셀프 계산기 설계
 ############################################################
 
@@ -2262,18 +2262,17 @@ print(*l)
 
 # class Mart_Calc :
 #     s = 0
-# 
 #     def add(self, x) :
 #         self.s += x
-# 
+
 # usr1 = Mart_Calc()
-# 
+
 # print(type(Mart_Calc))
 # print(type(usr1))
-# 
+
 # Mart_Calc.add(usr1, 50)
 # usr1.add(10)
-# 
+
 # print(usr1.s)
 # print(Mart_Calc.s)
 
@@ -2304,23 +2303,23 @@ print(*l)
 
 # class CLS :
 #     a = 10
-# 
+
 #     def f1(self, x) :
 #         y = x + 1
 #         self.b = y
 #         CLS.a += y
 #         print(CLS.a, self.b, y)
-# 
+
 #     def f2(self, x) :
 #         y = x + 100
 #         self.b = y
 #         CLS.a += y
 #         print(CLS.a, self.b, y)        
-# 
+
 # c = CLS()
 # c.f1(20)
 # c.f2(200)
-# 
+
 # print(CLS.a, c.b)
 
 ############################################################
@@ -2329,19 +2328,19 @@ print(*l)
 
 # class CLS :
 #     a = 10
-# 
+
 #     def f1(self, x) :
 #         self.a += x
 #         b = self.a
-# 
+
 #     def f2(self, x) :
 #         self.a += x
 #         b = self.a
-# 
+
 # c = CLS()
 # c.f1(20)
 # c.f2(200)
-# 
+
 # print(c.a, CLS.a)
 
 ############################################################
@@ -2349,14 +2348,14 @@ print(*l)
 ############################################################
                 
 # class Mart_Calc :
-# 
+#     s = 0
 #     def add(self, x) :
 #         self.s += x
 #         return self.s
-# 
+
 # usr = Mart_Calc()
 # usr.add(30)
-# 
+
 # print(usr.s)	
 
 #===========================================================
@@ -2382,14 +2381,14 @@ print(*l)
 #     def __init__(self, x) :
 #         print("__init__")
 #         self.s = x
-#         
+        
 #     def add(self, x) :
 #         self.s += x
 #         return self.s
-# 
+
 # usr = Mart_Calc(10)
 # r = usr.add(30)
-# 
+
 # print(r, usr.s)
 
 ############################################################
@@ -2399,24 +2398,24 @@ print(*l)
 # class Mart_Calc :
 #     "Mart Self Calculator"
 #     cnt, m = 0, "결제할 금액"
-# 
+
 #     def __init__(self, x) :
 #         self.s = x
 #         Mart_Calc.cnt += 1
-#         
+        
 #     def add(self, x) :
 #         self.s += x
 #         print(f'{Mart_Calc.m} => {self.s}원')
 #         return self.s
-# 
+
 # print(Mart_Calc.__doc__)
-# 
+
 # usr1 = Mart_Calc(10)
 # usr2 = Mart_Calc(30)
-# 
+
 # r1 = usr1.add(30)
 # r2 = usr2.add(400)
-# 
+
 # print(Mart_Calc.cnt, r1, usr1.s, r2, usr2.s)
 
 ############################################################
@@ -2477,21 +2476,21 @@ print(*l)
 ############################################################
 
 # a, b = 3, 5
-# 
+
 # print(dir(int))
-# 
+
 # r1 = a + b
 # r2 = int.__add__(a, b)
 # r3 = a.__add__(b)
-# 
+
 # print(r1, r2, r3)
-# 
+
 # print(dir(str))
-# 
+
 # r4 = "Hi" + "Pyhhon"
 # r5 = str.__add__("Hi", "Pyhhon")
 # r6 = "Hi".__add__("Pyhhon")
-# 
+
 # print(r4, r5, r6)
 
 ############################################################
@@ -2501,26 +2500,26 @@ print(*l)
 # class CLS :
 #     def __init__(self, x) :
 #         self.s = x
-# 
+
 #     def __add__(self, x) :
 #         return self.s + x
-#      
+     
 #     def __gt__(self, x) :
 #         return self.s > x.s
-# 
+
 #     def __abs__(self) :
 #         return -self.s
-# 
+
 # usr1 = CLS(10)
 # usr2 = CLS(-100)
-# 
+
 # print(CLS.__add__(usr1, 30))
 # print(usr1.__add__(30))
 # print(usr1 + 30)
-# 
+
 # print(usr1.__gt__(usr2))
 # print(usr1 > usr2)
-# 
+
 # print(usr2.__abs__())
 # print(abs(usr2))
 
@@ -2610,29 +2609,29 @@ print(*l)
 # [12-16] 여러 부모 Class로 부터 상속 받는 다중 상속
 ############################################################
 
-# class Father :
-#     def f1(self) :
-#         print("Father f1")
-# 
-#     def f2(self) :
-#         print("Father f2")
-# 
-# class Mother :
-#     def f1(self) :
-#         print("Mother f1")
-# 
-#     def f3(self) :
-#         print("Mother f3")
-#         
-# class Son(Father, Mother) :
-#     pass
-# 
-# c = Son()
-# print(Son.mro())
-# 
-# c.f1()
-# c.f2()
-# c.f3()
+class Father :
+    def f1(self) :
+        print("Father f1")
+
+    def f2(self) :
+        print("Father f2")
+
+class Mother :
+    def f1(self) :
+        print("Mother f1")
+
+    def f3(self) :
+        print("Mother f3")
+        
+class Son(Father, Mother) :
+    pass
+
+c = Son()
+print(Son.mro())
+
+c.f1()
+c.f2()
+c.f3()
 
 ############################################################
 # [12-17] Class method, Static method
