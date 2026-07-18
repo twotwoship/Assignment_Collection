@@ -1,0 +1,89 @@
+
+Discarded input sections
+
+ .text          0x00000000        0x0 startup.o
+ .data          0x00000000        0x0 startup.o
+ .bss           0x00000000        0x0 startup.o
+ .text          0x00000000        0x0 boot.o
+ .data          0x00000000        0x0 boot.o
+ .bss           0x00000000        0x0 boot.o
+ .comment       0x00000000       0x27 boot.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+SRAM             0x402f0400         0x00019c00         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD startup.o
+LOAD boot.o
+                0x402f0400                        . = ORIGIN (SRAM)
+
+.vectors        0x402f0400       0x20
+ *(.vectors)
+ .vectors       0x402f0400       0x20 startup.o
+                0x402f0400                _start
+
+.text           0x402f0420      0x19e
+ *(.text.reset)
+ .text.reset    0x402f0420       0x7c startup.o
+ *(.text*)
+ .text.boot_main
+                0x402f049c      0x110 boot.o
+                0x402f049c                boot_main
+ *(.rodata*)
+ .rodata.boot_main.str1.1
+                0x402f05ac       0x12 boot.o
+
+.glue_7         0x402f05c0        0x0
+ .glue_7        0x402f05c0        0x0 linker stubs
+
+.glue_7t        0x402f05c0        0x0
+ .glue_7t       0x402f05c0        0x0 linker stubs
+
+.vfp11_veneer   0x402f05c0        0x0
+ .vfp11_veneer  0x402f05c0        0x0 linker stubs
+
+.v4_bx          0x402f05c0        0x0
+ .v4_bx         0x402f05c0        0x0 linker stubs
+
+.iplt           0x402f05c0        0x0
+ .iplt          0x402f05c0        0x0 startup.o
+
+.rel.dyn        0x402f05c0        0x0
+ .rel.iplt      0x402f05c0        0x0 startup.o
+
+.data
+ *(.data*)
+
+.igot.plt       0x402f05c0        0x0
+ .igot.plt      0x402f05c0        0x0 startup.o
+
+.bss            0x402f05c0        0x0
+                0x402f05c0                        __bss_start__ = .
+ *(.bss*)
+ *(COMMON)
+                0x402f05c0                        __bss_end__ = .
+                0x402f05c0                        . = ALIGN (0x8)
+                0x402f05c0                        __image_end__ = .
+                0x4030a000                        __stack_bottom = 0x4030a000
+                0x4030b000                        __stack_top = 0x4030b000
+                0x00000001                        ASSERT ((__image_end__ <= __stack_bottom), stage1 image overlaps its SRAM stack)
+
+/DISCARD/
+ *(.comment*)
+ *(.note*)
+ *(.eh_frame*)
+ *(.ARM.exidx*)
+ *(.ARM.extab*)
+OUTPUT(stage1.elf elf32-littlearm)
+LOAD linker stubs
+
+.ARM.attributes
+                0x00000000       0x33
+ .ARM.attributes
+                0x00000000       0x25 startup.o
+ .ARM.attributes
+                0x00000025       0x31 boot.o

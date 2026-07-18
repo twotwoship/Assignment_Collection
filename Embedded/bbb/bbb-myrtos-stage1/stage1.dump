@@ -1,0 +1,136 @@
+
+stage1.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .vectors      00000020  402f0400  402f0400  00000400  2**5
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .text         0000019e  402f0420  402f0420  00000420  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .ARM.attributes 00000033  00000000  00000000  000005be  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .vectors:
+
+402f0400 <_start>:
+402f0400:	ea000006 	b	402f0420 <reset_handler>
+402f0404:	ea00001f 	b	402f0488 <default_handler>
+402f0408:	ea00001e 	b	402f0488 <default_handler>
+402f040c:	ea00001d 	b	402f0488 <default_handler>
+402f0410:	ea00001c 	b	402f0488 <default_handler>
+402f0414:	ea00001b 	b	402f0488 <default_handler>
+402f0418:	ea00001a 	b	402f0488 <default_handler>
+402f041c:	ea000019 	b	402f0488 <default_handler>
+
+Disassembly of section .text:
+
+402f0420 <reset_handler>:
+402f0420:	f10c00c0 	cpsid	if
+402f0424:	e10f0000 	mrs	r0, CPSR
+402f0428:	e3c0001f 	bic	r0, r0, #31
+402f042c:	e3800013 	orr	r0, r0, #19
+402f0430:	e121f000 	msr	CPSR_c, r0
+402f0434:	ee110f10 	mrc	15, 0, r0, cr1, cr0, {0}
+402f0438:	e3c00001 	bic	r0, r0, #1
+402f043c:	e3c00004 	bic	r0, r0, #4
+402f0440:	e3c00a01 	bic	r0, r0, #4096	@ 0x1000
+402f0444:	ee010f10 	mcr	15, 0, r0, cr1, cr0, {0}
+402f0448:	f57ff04f 	dsb	sy
+402f044c:	f57ff06f 	isb	sy
+402f0450:	e59fd034 	ldr	sp, [pc, #52]	@ 402f048c <default_handler+0x4>
+402f0454:	e59f0034 	ldr	r0, [pc, #52]	@ 402f0490 <default_handler+0x8>
+402f0458:	ee0c0f10 	mcr	15, 0, r0, cr12, cr0, {0}
+402f045c:	f57ff04f 	dsb	sy
+402f0460:	f57ff06f 	isb	sy
+402f0464:	e59f0028 	ldr	r0, [pc, #40]	@ 402f0494 <default_handler+0xc>
+402f0468:	e59f1028 	ldr	r1, [pc, #40]	@ 402f0498 <default_handler+0x10>
+402f046c:	e3a02000 	mov	r2, #0
+402f0470:	e1500001 	cmp	r0, r1
+402f0474:	34802004 	strcc	r2, [r0], #4
+402f0478:	3afffffc 	bcc	402f0470 <reset_handler+0x50>
+402f047c:	eb000006 	bl	402f049c <boot_main>
+402f0480:	e320f003 	wfi
+402f0484:	eafffffd 	b	402f0480 <reset_handler+0x60>
+
+402f0488 <default_handler>:
+402f0488:	eafffffe 	b	402f0488 <default_handler>
+402f048c:	4030b000 	.word	0x4030b000
+402f0490:	402f0400 	.word	0x402f0400
+402f0494:	402f05c0 	.word	0x402f05c0
+402f0498:	402f05c0 	.word	0x402f05c0
+
+402f049c <boot_main>:
+402f049c:	e59f30f8 	ldr	r3, [pc, #248]	@ 402f059c <boot_main+0x100>
+402f04a0:	e30a2aaa 	movw	r2, #43690	@ 0xaaaa
+402f04a4:	e5832048 	str	r2, [r3, #72]	@ 0x48
+402f04a8:	e5932034 	ldr	r2, [r3, #52]	@ 0x34
+402f04ac:	e3120010 	tst	r2, #16
+402f04b0:	1afffffc 	bne	402f04a8 <boot_main+0xc>
+402f04b4:	e3052555 	movw	r2, #21845	@ 0x5555
+402f04b8:	e5832048 	str	r2, [r3, #72]	@ 0x48
+402f04bc:	e5932034 	ldr	r2, [r3, #52]	@ 0x34
+402f04c0:	e3120010 	tst	r2, #16
+402f04c4:	1afffffc 	bne	402f04bc <boot_main+0x20>
+402f04c8:	e59f30d0 	ldr	r3, [pc, #208]	@ 402f05a0 <boot_main+0x104>
+402f04cc:	e3a02002 	mov	r2, #2
+402f04d0:	e58324b4 	str	r2, [r3, #1204]	@ 0x4b4
+402f04d4:	e59324b4 	ldr	r2, [r3, #1204]	@ 0x4b4
+402f04d8:	e3120803 	tst	r2, #196608	@ 0x30000
+402f04dc:	1afffffc 	bne	402f04d4 <boot_main+0x38>
+402f04e0:	e59f30bc 	ldr	r3, [pc, #188]	@ 402f05a4 <boot_main+0x108>
+402f04e4:	e3a02030 	mov	r2, #48	@ 0x30
+402f04e8:	e5832970 	str	r2, [r3, #2416]	@ 0x970
+402f04ec:	e3a02008 	mov	r2, #8
+402f04f0:	e5832974 	str	r2, [r3, #2420]	@ 0x974
+402f04f4:	e2433a07 	sub	r3, r3, #28672	@ 0x7000
+402f04f8:	e3a02002 	mov	r2, #2
+402f04fc:	e5832054 	str	r2, [r3, #84]	@ 0x54
+402f0500:	e5932058 	ldr	r2, [r3, #88]	@ 0x58
+402f0504:	e3120001 	tst	r2, #1
+402f0508:	0afffffc 	beq	402f0500 <boot_main+0x64>
+402f050c:	e3a01007 	mov	r1, #7
+402f0510:	e3a020bf 	mov	r2, #191	@ 0xbf
+402f0514:	e5831020 	str	r1, [r3, #32]
+402f0518:	e3a00003 	mov	r0, #3
+402f051c:	e583200c 	str	r2, [r3, #12]
+402f0520:	e5932008 	ldr	r2, [r3, #8]
+402f0524:	e3822010 	orr	r2, r2, #16
+402f0528:	e5832008 	str	r2, [r3, #8]
+402f052c:	e3a02080 	mov	r2, #128	@ 0x80
+402f0530:	e583200c 	str	r2, [r3, #12]
+402f0534:	e3a0201a 	mov	r2, #26
+402f0538:	e5832000 	str	r2, [r3]
+402f053c:	e3a02000 	mov	r2, #0
+402f0540:	e5832004 	str	r2, [r3, #4]
+402f0544:	e583000c 	str	r0, [r3, #12]
+402f0548:	e3a0000d 	mov	r0, #13
+402f054c:	e5831008 	str	r1, [r3, #8]
+402f0550:	e5832020 	str	r2, [r3, #32]
+402f0554:	e59f204c 	ldr	r2, [pc, #76]	@ 402f05a8 <boot_main+0x10c>
+402f0558:	e4d21001 	ldrb	r1, [r2], #1
+402f055c:	e3510000 	cmp	r1, #0
+402f0560:	1a000001 	bne	402f056c <boot_main+0xd0>
+402f0564:	e320f003 	wfi
+402f0568:	eafffffd 	b	402f0564 <boot_main+0xc8>
+402f056c:	e351000a 	cmp	r1, #10
+402f0570:	1a000003 	bne	402f0584 <boot_main+0xe8>
+402f0574:	e5931014 	ldr	r1, [r3, #20]
+402f0578:	e3110020 	tst	r1, #32
+402f057c:	0afffffc 	beq	402f0574 <boot_main+0xd8>
+402f0580:	e5830000 	str	r0, [r3]
+402f0584:	e5521001 	ldrb	r1, [r2, #-1]
+402f0588:	e593c014 	ldr	ip, [r3, #20]
+402f058c:	e31c0020 	tst	ip, #32
+402f0590:	0afffffc 	beq	402f0588 <boot_main+0xec>
+402f0594:	e5831000 	str	r1, [r3]
+402f0598:	eaffffee 	b	402f0558 <boot_main+0xbc>
+402f059c:	44e35000 	.word	0x44e35000
+402f05a0:	44e00000 	.word	0x44e00000
+402f05a4:	44e10000 	.word	0x44e10000
+402f05a8:	402f05ac 	.word	0x402f05ac
+402f05ac:	20424242 	.word	0x20424242
+402f05b0:	67617473 	.word	0x67617473
+402f05b4:	61203165 	.word	0x61203165
+402f05b8:	6576696c 	.word	0x6576696c
+402f05bc:	Address 0x402f05bc is out of bounds.
+
