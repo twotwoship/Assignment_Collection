@@ -26,7 +26,7 @@ libstdc++6 libtool libtool-bin make patch python3-dev rsync texinfo unzip wget x
 1. TPL 실행시 커널을 DRAM으로 로드한다. 원하는 경우 FDT나 초기 RAM disk를 추가 가능.
 * 여기에서 DDR초기화를 반드시해줘야됨.
 
-![ex_screenshot](./img/BBB_BOOT_LOAD.png)
+![ex_screenshot](../../../img/BBB_BOOT_LOAD.png)
 
 # 작성
 1. 1단계 : MLO DDR(512mb)을 초기화하고 같이 넣엇던 u-boot.img를 불러옴
