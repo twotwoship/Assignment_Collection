@@ -6,27 +6,23 @@ void LED_Init(void)
 	Macro_Set_Bit(RCC->AHB1ENR, 0); 
 
 	// LED를 출력으로 설정하고 초기 OFF
-	Macro_Write_Block(GPIOA->MODER, 0x3, 0x1, 10);
-	Macro_Clear_Bit(GPIOA->OTYPER, 5);
-	Macro_Clear_Bit(GPIOA->ODR, 5); 
+	Macro_Write_Block(GPIOA->MODER, 0x3, 0x1, 8);
+	Macro_Clear_Bit(GPIOA->OTYPER, 4);
+	Macro_Clear_Bit(GPIOA->ODR, 4); 
 }
 
 void LED_On(void)
 {
 	// LED On
-	/*
-	Macro_Set_Bit(GPIOA->ODR, 5); 
-	*/
-	GPIOA->BSRR = (1U << 5);
+
+	GPIOA->BSRR = (1U << 4);
 }
 
 void LED_Off(void)
 {
 	// LED Off
-	/*
-	Macro_Clear_Bit(GPIOA->ODR, 5); 
-	*/
-	GPIOA->BSRR = (1U << (5 + 16));
+
+	GPIOA->BSRR = (1U << (4 + 16));
 }
 
 void led_control(int on)
