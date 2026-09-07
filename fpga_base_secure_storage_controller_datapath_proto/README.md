@@ -272,3 +272,153 @@ Linux
    ▼
 Application
 ```
+
+
+# [확장] "정상 사용자가 잠긴 데이터를 어떻게 다시 살릴 수 있을 까?"
+
+### [개발 배경]
+```
+SSD에 암호화된 중요한 데이터가 있음
+        ↓
+어떤 이유로 키 접근이 막힘
+        ↓
+정상 사용자인데 데이터에 접근 불가
+        ↓
+그러면 어떻게 복구할 것인가?
+```
+
+
+### [논점]
+#### 합법적인 소유자가 데이터에 다시 접근할 경로가 있는가?
+```
+키가 손상되면?
+키 저장 영역이 깨지면?
+Controller가 죽으면?
+Firmware가 망가지면?
+사용자가 인증정보를 잊으면?
+메인보드를 교체하면?
+SSD를 다른 장비로 옮기면?
+관리자가 퇴사하면?
+```
+
+### 관점
+```
+Password
+   │
+   ↓
+  KDF
+   │
+   ↓
+  KEK
+   │
+   │ DEK를 복호화
+   ↓
+  DEK
+   │
+   ↓
+AES-XTS
+   │
+   ↓
+ NAND
+```
+암호화에 사용할 `dek key`를 생성한 뒤에 암호화해서 저장한다.
+이때 암호화해서 저장할 때 password를 활용해서 암호화하고, recorvery key로 암호화해서 저장한다.
+총 2개의 암호키가 있는거다.
+Password : AES key로 바로 쓰지는 않고 보통 KDF(Key Derivation Function) 를 거치고   
+DEK를 생성하는 재료라기보다, DEK를 잠그고 푸는 KEK를 만드는 입력
+```
+           실제 데이터
+               │
+          DEK가 필요함
+               ↑
+               │
+
+      ┌────────┴────────┐
+      │                 │
+
+ [금고 A]            [금고 B]
+ DEK 복사본           DEK 복사본
+   ↑                    ↑
+Password             Recovery Key
+```
+
+```
+                 ┌───────────────┐
+                 │ Recovery Key  │
+                 └───────┬───────┘
+                         │
+                         ↓
+Password → KEK ──────→ DEK
+                       │
+                       ↓
+                 AES-XTS Engine
+                       │
+                       ↓
+                     NAND
+```
+
+#### DEK — Data Encryption Key : 실제 데이터를 암호화하는 키
+```
+Plaintext
+   ↓
+AES-XTS + DEK
+   ↓
+Ciphertext
+```
+#### KEK — Key Encryption Key : DEK 자체를 암호화하는 키
+```
+데이터
+ ↓
+DEK로 암호화
+
+DEK
+ ↓
+KEK로 암호화
+```
+
+### 프로젝트 확장 - FPGA 기반 AES-XTS Storage Encryption과 Secure Key Lifecycle 관리
+```
+                    ┌─────────────┐
+                    │ Key Manager │
+                    └──────┬──────┘
+                           │
+Host I/O                   │ Key
+   │                       ↓
+   │              ┌─────────────────┐
+   └────────────→ │ FPGA AES-XTS    │
+                  │ Encryption IP   │
+                  └────────┬────────┘
+                           │
+                      Ciphertext
+                           │
+                           ↓
+                         NAND
+```
+### 특이사항 발생
+```
+FPGA 고장
+Controller 고장
+Key RAM 손상
+Firmware 오류
+전원 차단
+Key provisioning 실패
+```
+
+### [추가 예상 과업]
+1. AES-XTS Key는 어디에 저장할 것인가?
+
+2. FPGA 전원이 꺼지면 Key는 어떻게 되는가?
+
+3. Controller가 고장나면 데이터를 복구할 수 있는가?
+
+4. Key가 손상되면 복구 방법이 있는가?
+
+5. Recovery Key가 있다면 누가 접근할 수 있는가?
+
+6. Recovery Key 탈취를 어떻게 막을 것인가?
+
+7. Crypto Erase와 실수로 인한 Key Loss를
+   어떻게 구별하고 방지할 것인가?
+
+8. Key Backup / Key Rotation / Key Destruction을
+   어떻게 설계할 것인가?
