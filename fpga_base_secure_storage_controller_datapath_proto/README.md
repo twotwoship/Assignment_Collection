@@ -1,8 +1,6 @@
 
 ### [문제]  
-상용 SSD 자체 암호화에 의존하면  
-암호화 구현과 Key Management의 신뢰 경계가
-SSD Controller 내부에 존재한다.
+상용 SSD 자체 암호화에 의존하면 암호화 구현과 Key Management의 신뢰 경계가 SSD Controller 내부에 존재
 
 ### [아이디어]  
 데이터가 SSD에 진입하기 전에
@@ -22,8 +20,31 @@ Linux -> Driver -> AXI DMA -> FPGA AES-XTS -> Encrypted Storage
 LBA 기반 Tweak,  Host-managed Key,  Inline Encryption,  CPU Offload  
 Cryptographic Erase  
 
-### 목표
+### [개발 목표]
 암호 기능을 I/O 경로에 추가했지만 암호기가 storage throughput을 깎아먹지 않도록 충분한 처리량을 확보한다.
+
+### [구현 목표]
+```
+Linux Software
+Device Driver
+DMA / Register / Interrupt
+FPGA Hardware IP
+```
+
+```
+WRITE I/O
+ │
+ ├── LBA
+ ├── Length
+ ├── Key
+ └── Data
+       │
+       ▼
+     AES-XTS
+       │
+       ▼
+Encrypted I/O
+```
 
 ### [검증]  
 OpenSSL Golden Model      =      FPGA  
@@ -44,12 +65,8 @@ Military / Edge Storage
 Data Center Storage
 
 ### [최종 의미]    
-FPGA는 SSD의 AES를 대체하기 위한 것이 아니라  
-"향후 ASIC SSD Controller에 탑재할  
-Secure Storage Datapath를 검증하는  
-Hardware Prototype"
-
-
+FPGA는 SSD의 AES를 대체하기 위한 것이 아니라 "향후 ASIC SSD Controller에 탑재할 Secure Storage Datapath를 검증하는 Hardware Prototype"
+```
                 Secure Storage
                        │
              ┌─────────┴──────────┐
@@ -71,5 +88,54 @@ Hardware Prototype"
                  OS integration
                        │
                 Linux Driver
+```
 
+## [정리]
+Linux의 block I/O 데이터를 DMA로 FPGA에 전달하고, FPGA에서 LBA 기반 AES-XTS를 inline으로 처리하는 저장장치 암호화 하드웨어 prototype
+```
+┌──────────────────────────────┐
+│ Linux                        │
+│                              │
+│ Application                  │
+│     ↓                        │
+│ File System                  │
+│     ↓                        │
+│ Block I/O                    │
+└─────┬────────────────────────┘
+      │
+      ▼
+┌──────────────────────────────┐
+│ Linux Device Driver          │
+│                              │
+│ FPGA 제어                    │
+│ Key 설정                     │
+│ DMA 설정                     │
+└─────┬────────────────────────┘
+      │
+      ▼
+┌──────────────────────────────┐
+│ AXI DMA                      │
+│                              │
+│ Memory ↔ FPGA data transfer │
+└─────┬────────────────────────┘
+      │
+      ▼
+╔══════════════════════════════╗
+║ FPGA                         ║
+║                              ║
+║ LBA                          ║
+║  │                           ║
+║  ▼                           ║
+║ Tweak Generator              ║
+║  │                           ║
+║  ▼                           ║
+║ AES-XTS Engine               ║
+║  │                           ║
+║  ▼                           ║
+║ Ciphertext                   ║
+╚═════╤════════════════════════╝
+      │
+      ▼
+   Storage
+```
 
