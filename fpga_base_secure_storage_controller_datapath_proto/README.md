@@ -22,11 +22,20 @@ Linux -> Driver -> AXI DMA -> FPGA AES-XTS -> Encrypted Storage
 LBA 기반 Tweak,  Host-managed Key,  Inline Encryption,  CPU Offload  
 Cryptographic Erase  
 
+### 목표
+암호 기능을 I/O 경로에 추가했지만 암호기가 storage throughput을 깎아먹지 않도록 충분한 처리량을 확보한다.
+
 ### [검증]  
 OpenSSL Golden Model      =      FPGA  
 
-### [성능]   
-CPU AES-XTS       VS     FPGA AES-XTS  
+### [성능]
+|측정|비교군|개발|
+|---|---|---|
+|---|CPU Software AES-XTS 2 GB/s CPU 80%|FPGA AES-XTS  4 GB/s CPU 10%|
+|Throughput|---|---|
+|Latency|---|---|
+|CPU load|---|---|
+|FPGA resource usage|---|---|
 
 ### [응용]   
 SSD Controller IP
@@ -39,3 +48,28 @@ FPGA는 SSD의 AES를 대체하기 위한 것이 아니라
 "향후 ASIC SSD Controller에 탑재할  
 Secure Storage Datapath를 검증하는  
 Hardware Prototype"
+
+
+                Secure Storage
+                       │
+             ┌─────────┴──────────┐
+             │                    │
+        Storage semantics       Security
+             │                    │
+            LBA                AES-XTS
+             │                    │
+             └─────────┬──────────┘
+                       │
+                Hardware datapath
+                       │
+                     FPGA
+                       │
+                  CPU offload
+                       │
+                    AXI DMA
+                       │
+                 OS integration
+                       │
+                Linux Driver
+
+
