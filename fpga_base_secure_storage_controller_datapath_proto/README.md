@@ -66,10 +66,10 @@ USB / microSD Storage
          │                     │ MM2S   S2MM │    AXI DMA S2MM  :  Stream 결과를 DDR에 기록
          │                     └──┬─────▲────┘
          │                        │     │
-         │                 AXI Stream  AXI Stream
-         │                        │     │
-         └───────────────────┐    ▼     │
-                             ▼          │
+         │                 AXI Stream  AXI Stream       AXI4-Stream
+         │                        │     │                 TVALID
+         └───────────────────┐    ▼     │                 TREADY
+                             ▼          │                 TLAST
                          ┌───────────┐  │
                          │ AES-XTS   │──┘
                          │ Engine    │
