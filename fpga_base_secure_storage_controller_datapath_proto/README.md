@@ -28,10 +28,10 @@ SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath�
 │          AXI4-Stream                             │
 │                 │                                │
 │                 ▼                                │
-│        ┌──────────────────┐                      │
-│ LBA ──▶│ AES-XTS Engine  │                      │
-│ Key ──▶│                 │                      │
-│        └────────┬─────────┘                      │
+│         ┌──────────────────┐                     │
+│ LBA ──▶│ AES-XTS Engine   │                     │
+│ Key ──▶│                  │                     │
+│         └────────┬─────────┘                     │
 │                 │                                │
 │              Ciphertext                          │
 │                                                  │
