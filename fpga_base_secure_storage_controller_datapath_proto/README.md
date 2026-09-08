@@ -2,7 +2,41 @@
 
 ## 한줄 요약 
 SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath를 FPGA로 prototype하고, 이를 Linux Device Driver + DMA + Interrupt로 제어하는 HW/SW Co-design 프로젝트
-
+## 한줄 디자인
+```
+              Zybo Z7-20
+┌──────────────────────────────────────────────────┐
+│                                                  │
+│              PS : ARM Cortex-A9                  │
+│                                                  │
+│       Linux Application                          │
+│               │                                  │
+│               ▼                                  │
+│       Linux Device Driver                        │
+│        │              │                          │
+│        │ MMIO         │ DMA                      │
+│        │              │                          │
+│        ▼              ▼                          │
+│   AXI GP         DDR ←→ AXI HP                   │
+│                         │                        │
+│=========================│========================│
+│                         │                        │
+│              PL : FPGA  ▼                        │
+│                                                  │
+│              AXI DMA                             │
+│                 │                                │
+│          AXI4-Stream                             │
+│                 │                                │
+│                 ▼                                │
+│        ┌──────────────────┐                      │
+│ LBA ──▶│ AES-XTS Engine  │                      │
+│ Key ──▶│                 │                      │
+│        └────────┬─────────┘                      │
+│                 │                                │
+│              Ciphertext                          │
+│                                                  │
+└──────────────────────────────────────────────────┘
+```
 ### [개발 배경 및 문제 발견]  
 현대 SSD에서는 저장 데이터 보호를 위해 hardware encryption을 지원하는 제품이 존재  
 하지만 시스템 관점에서는 암호화 정책이 `SSD` 내부 또는 `HOST / SOC` 에 존재 할 수 있다.  
