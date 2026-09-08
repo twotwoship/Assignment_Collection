@@ -3,6 +3,9 @@
 ## 한줄 요약 
 SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath를 FPGA로 prototype하고, 이를 Linux Device Driver + DMA + Interrupt로 제어하는 HW/SW Co-design 프로젝트
 
+## 목표 
+DDR → DMA → AES-XTS → DMA → DDR → Linux Storage I/O → 실제 USB Storage까지 구현하고, 다시 읽어서 FPGA로 복호화해 원문 복구.
+
 ## 주요 기술 
 ```
 Linux Application
