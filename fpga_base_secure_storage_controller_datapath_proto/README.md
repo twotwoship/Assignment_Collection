@@ -11,13 +11,13 @@ Kernel Driver
        ↓
 MMIO / DMA / IRQ
        ↓
-AXI
+       AXI
        ↓
 FPGA Hardware IP
        ↓
-AES-XTS
+       AES-XTS
        ↓
-Storage
+       Storage
 ```
 ## 한줄 디자인
 ```
