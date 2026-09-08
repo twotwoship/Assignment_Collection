@@ -2,6 +2,23 @@
 
 ## 한줄 요약 
 SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath를 FPGA로 prototype하고, 이를 Linux Device Driver + DMA + Interrupt로 제어하는 HW/SW Co-design 프로젝트
+
+## 주요 기술 
+```
+Linux Block I/O
+       ↓
+Kernel Driver
+       ↓
+MMIO / DMA / IRQ
+       ↓
+AXI
+       ↓
+FPGA Hardware IP
+       ↓
+AES-XTS
+       ↓
+Storage
+```
 ## 한줄 디자인
 ```
                      Zybo Z7-20
