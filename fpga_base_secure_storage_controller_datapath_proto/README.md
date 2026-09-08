@@ -1,4 +1,4 @@
-# FPGA 기반 AES-XTS Hardware Accelerator의 Linux HW/SW 통합
+# Zynq SoC 기반 Linux–FPGA AES-XTS Secure Storage Datapath Prototype
 
 ## 한줄 요약 
 SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath를 FPGA로 prototype하고, 이를 Linux Device Driver + DMA + Interrupt로 제어하는 HW/SW Co-design 프로젝트
