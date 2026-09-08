@@ -4,7 +4,7 @@
 SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath를 FPGA로 prototype하고, 이를 Linux Device Driver + DMA + Interrupt로 제어하는 HW/SW Co-design 프로젝트
 
 ## 목표 
-DDR → DMA → AES-XTS → DMA → DDR → Linux Storage I/O → 실제 USB Storage까지 구현하고, 다시 읽어서 FPGA로 복호화해 원문 복구.
+`DDR → DMA → AES-XTS → DMA → DDR → Linux Storage I/O → 실제 USB Storage`까지 구현, 다시 읽어서 FPGA로 복호화해 원문 복구.
 
 ## 주요 기술 
 ```
@@ -221,6 +221,34 @@ Encrypted I/O
 |CPU load|---|---|
 |FPGA resource usage|---|---|
 
+#### 성능 측정 방식
+```
+[Crypto Benchmark]
+
+DDR
+ ↓
+DMA
+ ↓
+AES-XTS
+ ↓
+DMA
+ ↓
+DDR
+
+→ FPGA 순수 throughput
+
+
+[System Benchmark]
+
+File
+ ↓
+AES-XTS
+ ↓
+USB Storage
+
+→ end-to-end Secure Storage throughput
+```
+
 ### [응용]   
 SSD Controller IP
 Secure Storage Appliance
@@ -235,7 +263,7 @@ FPGA는 SSD의 AES를 대체하기 위한 것이 아니라 "향후 ASIC SSD Cont
 Linux에서 준비한 storage I/O 단위의 데이터 buffer를 AXI DMA를 통해 FPGA AES-XTS accelerator에 전달하고, LBA 기반 암·복호화를 수행하는 Zynq HW/SW prototype.
 
 [Extension]
-Linux block I/O integration
+Linux Storage I/O
 
 ### [상세]
 #### [Linux에서 하드웨어 암호 엔진을 어떻게 제어하고, 데이터를 어떻게 전달하고, 완료를 어떻게 받고, SW 방식과 어떻게 검증했는가?]
@@ -292,65 +320,39 @@ Driver가 완료 처리
        ↓
 User에게 결과 반환
 ```
-
-### [DATA FLOW]
-WRITE
+#### 쓸 때
 ```
 Application
-     │
-     ▼
-Linux File System
-     │
-     ▼
-Block I/O
-     │
-     │ LBA = 1000
-     ▼
-Linux Driver
-     │
-     │ DMA 설정
-     ▼
-AXI DMA
-     │
-     │ 4096B
-     ▼
-FPGA
-     │
-     ├─ LBA1000 → Tweak
-     │
-     ├─ AES-XTS
-     │
-     ▼
-Ciphertext
-     │
-     ▼
-Storage
-```
-READ
-```
-Storage
-   │
-   │ Ciphertext
-   ▼
-FPGA
-   │
-   ├─ LBA1000 → Tweak
-   │
-   ├─ AES-XTS decrypt
-   │
-   ▼
-DMA
-   │
-   ▼
-RAM
-   │
-   ▼
-Linux
-   │
-   ▼
-Application
-```
 
+① plaintext 준비
+       │
+       ▼
+② FPGA driver에게 암호화 요청
+       │
+       ▼
+③ ciphertext 결과 buffer
+       │
+       ▼
+④ Linux의 일반적인 파일 write
+       │
+       ▼
+⑤ /mnt/usb/encrypted.bin
+```
+#### 읽을 때
+```
+Application
+
+① encrypted.bin 읽음
+       │
+       ▼
+② ciphertext buffer
+       │
+       ▼
+③ FPGA driver에게 decrypt 요청
+       │
+       ▼
+④ plaintext
+```
 
 # [확장] "정상 사용자가 잠긴 데이터를 어떻게 다시 살릴 수 있을 까?"
 
