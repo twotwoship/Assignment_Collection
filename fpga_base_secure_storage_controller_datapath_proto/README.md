@@ -5,19 +5,26 @@ SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath�
 
 ## 주요 기술 
 ```
-Linux Block I/O
+Linux Application
        ↓
 Kernel Driver
        ↓
 MMIO / DMA / IRQ
        ↓
-       AXI
+AXI
        ↓
-FPGA Hardware IP
+FPGA AES-XTS Accelerator
        ↓
-       AES-XTS
+PS DDR
+
+[Extension]
+
+PS DDR Ciphertext
        ↓
-       Storage
+Linux Storage I/O
+       ↓
+USB / microSD Storage
+
 ```
 ## 한줄 디자인
 ```
@@ -35,7 +42,7 @@ FPGA Hardware IP
        CONTROL PATH              DATA PATH
              │                        │
              ▼                        ▼
- M_AXI_GP0 :CPU → PL register 접근    DDR -------▶ storage 향후 발전과제 : Storage integration
+ M_AXI_GP0 :CPU → PL register 접근    DDR --- Linux Storage I/O → USB/microSD   [Future Integration]
              │                        ▲
 =============│========================│============= PS/PL
              │                        │ 
@@ -87,28 +94,60 @@ Host-controlled Key를 이용하여 암호화
 ```
 Linux Device Driver
         │
-        ├─ FPGA register
-        ├─ DMA
-        ├─ interrupt
-        └─ user interface
+        ├─ FPGA Control Register 제어
+        ├─ AXI DMA Register 설정
+        ├─ DMA Buffer 관리
+        ├─ Interrupt 처리
+        └─ User-space Interface 제공
 ```   
 2. cpu와 fpga의 역할 분리 측정
 3. 실제 i/o 단위 사용
 
-### [증명]  
-CPU에서 AES-XTS를 수행하면
-CPU 자원과 Memory bandwidth를 소비
-
 ### [해결]  
-Linux dm-crypt  
-FPGA에 AES-XTS Hardware Pipeline을 구현한다.
+OpenSSL AES-XTS
+→ Golden Model / correctness 검증
+
+CPU AES-XTS
+→ 성능 비교 baseline
+
+dm-crypt
+→ Linux storage encryption architecture 참고
 
 ### [구조]  
-Linux -> Driver -> AXI DMA -> FPGA AES-XTS -> Encrypted Storage
+```
+Linux Application
+      ↓
+Device Driver
+      ↓
+AXI DMA Control
+      ↓
 
+PS DDR Plaintext
+      ↓
+AXI DMA MM2S
+      ↓
+AES-XTS
+      ↓
+AXI DMA S2MM
+      ↓
+PS DDR Ciphertext
+
+[Extension]
+PS DDR Ciphertext
+      ↓
+Linux Storage I/O
+      ↓
+USB / microSD
+```
 ### [특징]  
-LBA 기반 Tweak,  Host-managed Key,  Inline Encryption,  CPU Offload  
-Cryptographic Erase  
+
+|현재|확장|
+|---|---|
+|Linux Driver Integration|Storage I/O Integration|
+|AXI DMA Datapath|Inline Storage Encryption|
+|FPGA Crypto Offload|Cryptographic Erase|
+|Host-managed Key|Secure Key Lifecycle|
+|LBA-based AES-XTS||
 
 ### [개발 목표]
 ```
@@ -148,11 +187,26 @@ Encrypted I/O
 ```
 
 ### [검증 및 증명]  
-0. linux applictation[software, driver]
-1. dma
-2. OpenSSL Golden Model      =      FPGA  
-3. 다른 LBA에 같은 평문 저장 후 암호문 비교 X != Y
-4. CPU software 대비 throughput/CPU load 비교
+1. linux applictation[software, driver]
+2. dma
+3. OpenSSL Golden Model      =      FPGA  
+4. 다른 LBA에 같은 평문 저장 후 암호문 비교 X != Y
+5. CPU software 대비 throughput/CPU load 비교
+6. 1. AES-XTS Encrypt / Decrypt round-trip
+7. OpenSSL Golden Model = FPGA bit-exact
+8. 동일 plaintext + 다른 LBA → 다른 ciphertext
+9. AXI DMA MM2S/S2MM 동작 검증
+10. Interrupt 기반 completion 검증
+11. 512B / 4KiB data unit 검증
+12. CPU software vs FPGA
+   - Throughput   - Latency   - CPU utilization
+13. FPGA resource usage
+   - LUT   - FF   - BRAM   - Fmax
+   - 
+[Extension]
+14. 실제 storage에는 ciphertext 저장
+15. storage read → FPGA decrypt → 원문 복구
+
 
 ### [성능]
 |측정|비교군|개발|
@@ -171,94 +225,48 @@ Military / Edge Storage
 Data Center Storage
 
 ### [의미]
-`AES → XTS → LBA → DMA → FPGA → Linux Driver → SSD`  
 FPGA는 SSD의 AES를 대체하기 위한 것이 아니라 "향후 ASIC SSD Controller에 탑재할 Secure Storage Datapath를 검증하는 Hardware Prototype"
-```
-                Secure Storage
-                       │
-             ┌─────────┴──────────┐
-             │                    │
-        Storage semantics       Security
-             │                    │
-            LBA                AES-XTS
-             │                    │
-             └─────────┬──────────┘
-                       │
-                Hardware datapath
-                       │
-                     FPGA
-                       │
-                  CPU offload
-                       │
-                    AXI DMA
-                       │
-                 OS integration
-                       │
-                Linux Driver
-```
+
 
 ## [정리]
-Linux의 block I/O 데이터를 DMA로 FPGA에 전달하고, FPGA에서 LBA 기반 AES-XTS를 inline으로 처리하는 저장장치 암호화 하드웨어 prototype
-### 요약
-```
-Application
-    ↓
-Linux Kernel
-    ↓
-Device Driver
-    ↓
-MMIO / Interrupt / DMA
-    ↓
-Hardware IP
-```
+Linux에서 준비한 storage I/O 단위의 데이터 buffer를 AXI DMA를 통해 FPGA AES-XTS accelerator에 전달하고, LBA 기반 암·복호화를 수행하는 Zynq HW/SW prototype.
+
+[Extension]
+Linux block I/O integration
 
 ### [상세]
 #### [Linux에서 하드웨어 암호 엔진을 어떻게 제어하고, 데이터를 어떻게 전달하고, 완료를 어떻게 받고, SW 방식과 어떻게 검증했는가?]
 ```
-┌──────────────────────────────┐
-│ Linux                        │
-│                              │
-│ Application                  │
-│     ↓                        │
-│ File System                  │
-│     ↓                        │
-│ Block I/O                    │
-└─────┬────────────────────────┘
-      │
-      ▼
-┌──────────────────────────────┐
-│ Linux Device Driver          │
-│                              │
-│ FPGA 제어                    │
-│ Key 설정                     │
-│ DMA 설정                     │
-└─────┬────────────────────────┘
-      │
-      ▼
-┌──────────────────────────────┐
-│ AXI DMA                      │
-│                              │
-│ Memory ↔ FPGA data transfer │
-└─────┬────────────────────────┘
-      │
-      ▼
-╔══════════════════════════════╗
-║ FPGA                         ║
-║                              ║
-║ LBA                          ║
-║  │                           ║
-║  ▼                           ║
-║ Tweak Generator              ║
-║  │                           ║
-║  ▼                           ║
-║ AES-XTS Engine               ║
-║  │                           ║
-║  ▼                           ║
-║ Ciphertext                   ║
-╚═════╤════════════════════════╝
-      │
-      ▼
-   Storage
+              PS
+
+Application
+    ↓
+Linux Driver
+    │
+    ├── MMIO → AES/DMA Registers
+    │
+    └── IRQ ← DMA completion
+
+PS DDR plaintext
+    │
+    ▼
+S_AXI_HP
+    │
+──────────────── PS / PL
+    ▼
+AXI DMA MM2S
+    │
+AXI4-Stream
+    │
+AES-XTS
+    │
+AXI4-Stream
+    │
+AXI DMA S2MM
+    │
+──────────────── PL / PS
+    ▼
+PS DDR ciphertext
 ```
 
 #### [Linux driver]
@@ -390,7 +398,7 @@ AES-XTS
 ```
 암호화에 사용할 `dek key`를 생성한 뒤에 암호화해서 저장한다.
 이때 암호화해서 저장할 때 password를 활용해서 암호화하고, recorvery key로 암호화해서 저장한다.
-총 2개의 암호키가 있는거다.
+두 KEK가 동일한 DEK를 각각 보호 할 수 있음.
 Password : AES key로 바로 쓰지는 않고 보통 KDF(Key Derivation Function) 를 거치고   
 DEK를 생성하는 재료라기보다, DEK를 잠그고 푸는 KEK를 만드는 입력
 ```
