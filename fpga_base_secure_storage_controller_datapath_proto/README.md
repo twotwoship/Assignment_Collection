@@ -4,38 +4,51 @@
 SSD Controller/SoC 내부에 들어갈 수 있는 AES-XTS accelerator datapath를 FPGA로 prototype하고, 이를 Linux Device Driver + DMA + Interrupt로 제어하는 HW/SW Co-design 프로젝트
 ## 한줄 디자인
 ```
-              Zybo Z7-20
-┌──────────────────────────────────────────────────┐
-│                                                  │
-│              PS : ARM Cortex-A9                  │
-│                                                  │
-│       Linux Application                          │
-│               │                                  │
-│               ▼                                  │
-│       Linux Device Driver                        │
-│        │              │                          │
-│        │ MMIO         │ DMA                      │
-│        │              │                          │
-│        ▼              ▼                          │
-│   AXI GP         DDR ←→ AXI HP                   │
-│                         │                        │
-│=========================│========================│
-│                         │                        │
-│              PL : FPGA  ▼                        │
-│                                                  │
-│              AXI DMA                             │
-│                 │                                │
-│          AXI4-Stream                             │
-│                 │                                │
-│                 ▼                                │
-│         ┌──────────────────┐                     │
-│ LBA ──▶│ AES-XTS Engine   │                     │
-│ Key ──▶│                  │                     │
-│         └────────┬─────────┘                     │
-│                 │                                │
-│              Ciphertext                          │
-│                                                  │
-└──────────────────────────────────────────────────┘
+                     Zybo Z7-20
+                     [ PS : CPU ]
+
+                    ARM Cortex-A9
+                         │
+                      Linux
+                         │
+                  Device Driver
+                         │
+             ┌───────────┴────────────┐
+             │                        │
+       CONTROL PATH              DATA PATH
+             │                        │
+             ▼                        ▼
+ M_AXI_GP0 :CPU → PL register 접근    DDR -------▶ storage 향후 발전과제 : Storage integration
+             │                        ▲
+=============│========================│============= PS/PL
+             │                        │ 
+             ▼         S_AXI_HP0 : PL DMA가 PS DDR에 고속 접근
+       AXI Interconnect               │
+         ┌────┴────┐                  │
+         │         │                  │        Interrupt : DMA/AES 암호화 완료를 CPU에 알림
+         ▼         ▼                  │
+     AES Regs    DMA Regs             │
+      LBA         Source Address      │
+      MODE        Destination Address │
+      START       Length              │
+      STATUS      START               │
+         │                            │
+         │                     ┌──────┴──────┐
+         │                     │  AXI DMA    │    AXI DMA MM2S  :  DDR 데이터를 Stream으로 변환
+         │                     │             │
+         │                     │ MM2S   S2MM │    AXI DMA S2MM  :  Stream 결과를 DDR에 기록
+         │                     └──┬─────▲────┘
+         │                        │     │
+         │                 AXI Stream  AXI Stream
+         │                        │     │
+         └───────────────────┐    ▼     │
+                             ▼          │
+                         ┌───────────┐  │
+                         │ AES-XTS   │──┘
+                         │ Engine    │
+                         └───────────┘
+
+                         [ PL : FPGA ]
 ```
 ### [개발 배경 및 문제 발견]  
 현대 SSD에서는 저장 데이터 보호를 위해 hardware encryption을 지원하는 제품이 존재  
