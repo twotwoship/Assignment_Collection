@@ -566,4 +566,16 @@ memcmp(original, decrypted)
 
 STEP 10
 성능 측정
+
+## 참고 깃
+|파트|프로젝트|
+|||
+|||
+AES RTL	secworks/aes
+AES-XTS	aes-xts-fpga-core
+XTS hardware architecture	aes-encryption-engine
+AXI DMA	xilinx_axidma
+Zynq PS ↔ PL DMA	Zynq-Linux-DMA
+Custom IP + Linux Driver	Xilinx/axi-packaging-and-linux-driver
+Golden Model	OpenSSL AES-XTS
 ```
