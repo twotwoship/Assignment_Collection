@@ -502,3 +502,68 @@ Key provisioning 실패
 
 8. Key Backup / Key Rotation / Key Destruction을
    어떻게 설계할 것인가?
+
+
+
+### 구현 순서
+```
+STEP 1
+OpenSSL AES-XTS
+      ↓
+Golden Vector 확보
+
+STEP 2
+AES RTL simulation
+      ↓
+OpenSSL == RTL
+
+STEP 3
+XTS RTL simulation
+      ↓
+LBA 0
+LBA 1
+Encrypt
+Decrypt
+검증
+
+STEP 4
+Zynq
+DDR → DMA → FPGA loopback → DMA → DDR
+
+STEP 5
+loopback 대신 AES-XTS 삽입
+
+DDR
+ ↓
+DMA
+ ↓
+AES-XTS
+ ↓
+DMA
+ ↓
+DDR
+
+STEP 6
+Linux driver에서
+MMIO / DMA / IRQ 제어
+
+STEP 7
+Linux Application
+
+plaintext
+ ↓
+FPGA Encrypt
+ ↓
+ciphertext
+
+STEP 8
+USB/microSD write/read
+
+STEP 9
+FPGA Decrypt
+ ↓
+memcmp(original, decrypted)
+
+STEP 10
+성능 측정
+```
