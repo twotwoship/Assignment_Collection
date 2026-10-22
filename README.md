@@ -1,3 +1,16 @@
+
+## 상공회의소 서울기술교육센터 AI 시스템 반도체 SW개발자 프로젝트 작업물
+|구분|역할|주소|
+|---|---|---|
+|AI / 보드불량감지|머신제어 및 내부판정|https://github.com/clap-min99/board_guard/tree/master|
+|MCU / |---|---|
+|AI / |---|---|
+|MCU / |---|---|
+|공모전 / |---|---|
+|MCU / |---|---|
+|MCU / |---|---|
+
+
 # Assignment Collection
 
 This repository contains assignments and practice projects related to:
@@ -16,23 +29,8 @@ This repository contains assignments and practice projects related to:
 | Linux | Linux and system programming assignments |
 | Embedded | atmega128, STM32, BBB, and embedded projects |
 
-## Author
-
-two_two_ship
-
 ##YOUTUBE
 
 https://youtube.com/@twotwoship
 
-
-## other works
-|구분|역할|주소|
-|---|---|---|
-|AI / 보드불량감지|머신제어 및 내부판정|https://github.com/clap-min99/board_guard/tree/master|
-|MCU / |---|---|
-|AI / |---|---|
-|MCU / |---|---|
-|공모전 / |---|---|
-|MCU / |---|---|
-|MCU / |---|---|
 
