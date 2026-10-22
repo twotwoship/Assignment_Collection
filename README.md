@@ -17,16 +17,6 @@
 ### Practical Training Videos  
 https://youtube.com/@twotwoship
 
-
-# Assignment Collection
-
-This repository contains assignments and practice projects related to:
-
-- Data Structures
-- Algorithms
-- Linux System Programming
-- Embedded Systems
-
 ## Directory Structure
 
 | Category | Description |
