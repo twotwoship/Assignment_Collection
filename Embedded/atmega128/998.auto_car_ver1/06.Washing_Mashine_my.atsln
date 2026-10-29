@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "06.Washing_Mashine_my", "06.Washing_Mashine_my.cproj", "{7DA597C3-CBFA-4EA9-9DEE-DDD22598B0DE}"
+EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "02.FND_CONTROL_my_uart_interrupt", "..\02.FND_CONTROL_my_uart_interrupt\02.FND_CONTROL_my_uart_interrupt.cproj", "{0E5F77C4-7294-482A-A7A2-305DDA7B9570}"
+EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "04.uart", "..\04.uart\04.uart.cproj", "{9507F4F1-D0F3-4986-9726-95D66A4B0A74}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DA597C3-CBFA-4EA9-9DEE-DDD22598B0DE}.Debug|AVR.ActiveCfg = Debug|AVR
+		{7DA597C3-CBFA-4EA9-9DEE-DDD22598B0DE}.Debug|AVR.Build.0 = Debug|AVR
+		{7DA597C3-CBFA-4EA9-9DEE-DDD22598B0DE}.Release|AVR.ActiveCfg = Release|AVR
+		{7DA597C3-CBFA-4EA9-9DEE-DDD22598B0DE}.Release|AVR.Build.0 = Release|AVR
+		{0E5F77C4-7294-482A-A7A2-305DDA7B9570}.Debug|AVR.ActiveCfg = Debug|AVR
+		{0E5F77C4-7294-482A-A7A2-305DDA7B9570}.Debug|AVR.Build.0 = Debug|AVR
+		{0E5F77C4-7294-482A-A7A2-305DDA7B9570}.Release|AVR.ActiveCfg = Release|AVR
+		{0E5F77C4-7294-482A-A7A2-305DDA7B9570}.Release|AVR.Build.0 = Release|AVR
+		{9507F4F1-D0F3-4986-9726-95D66A4B0A74}.Debug|AVR.ActiveCfg = Debug|AVR
+		{9507F4F1-D0F3-4986-9726-95D66A4B0A74}.Debug|AVR.Build.0 = Debug|AVR
+		{9507F4F1-D0F3-4986-9726-95D66A4B0A74}.Release|AVR.ActiveCfg = Release|AVR
+		{9507F4F1-D0F3-4986-9726-95D66A4B0A74}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
