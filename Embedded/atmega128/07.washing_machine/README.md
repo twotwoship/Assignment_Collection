@@ -1,7 +1,7 @@
 # ATmega128A 기반 세탁기 제어 시스템
 
 세탁·헹굼·탈수 과정을 상태에 따라 제어하고,
-버튼과 UART 명령으로 조작하는 MCU 프로젝트입니다.
+버튼과 UART 명령으로 조작하는 MCU 프로젝트입니다.  
 발표자료 첨부 : 가. _LeeYB_Washing_machine_ppt.pptx
 
 **주요 기술:** ATmega128A · C · FSM · Timer Interrupt · PWM · UART
