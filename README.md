@@ -15,15 +15,11 @@ MCU 제어, Linux 디바이스 드라이버, 장치 간 통신을 구현한 프�
 
 ### Smart Fan | Linux 디바이스 드라이버 기반 선풍기
 
-입출력 장치를 Linux 디바이스 드라이버로 제어하는 스마트 선풍기입니다.
-
 - **담당 역할:** LCD·로터리 인코더 드라이버 구현. 인터럽트·FIFO와 `read()`, `write()`, `poll()`을 활용한 장치 입출력 처리
 - **주요 기술:** C · Linux Kernel · GPIO · I²C · Jetson Orin Nano
 - **자료:** [코드·상세 설명](https://github.com/twotwoship/Linux_fan) · [시연](https://www.youtube.com/shorts/Q2UGQjDw2Ow)
 
 ### 약SLOT | 자동 복약 지원 시스템
-
-복약 일정 관리와 약 배출을 연결한 임베디드 시스템입니다.
 
 - **담당 역할:** 팀장·시스템 아키텍처 및 통합 담당. Raspberry Pi SW, Flask·SQLite, LCD UI, 음성 안내, UART 통신 관리
 - **주요 기술:** Python · Raspberry Pi 4 · Flask · SQLite · UART
@@ -51,19 +47,6 @@ MCU 제어, Linux 디바이스 드라이버, 장치 간 통신을 구현한 프�
   작성 중
   `STM32` · `C` · `Timer/PWM` · `FSM` · [시연]()
 
-## 진행 중인 프로젝트
-
-### BeagleBone Black 초기 부트로더
-
-- **현재:** ARM 시작 코드, 스택·BSS 초기화, Watchdog 비활성화, UART0 제어 코드와 MLO 빌드 산출물 확보
-- **다음 단계:** 실기 부팅 확인, 예외 처리·GPIO 확장, DDR 초기화 및 두 번째 단계 로딩
-- **자료:** [코드·개발 범위](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/bbb/bbb-myrtos-stage1)
-
-### Zynq 기반 Linux–FPGA AES-XTS 보안 저장장치
-
-- **현재:** 시스템 구조 설계, AES-XTS 및 검증 방식 사전 학습
-- **개발 목표:** Linux 드라이버의 MMIO·DMA·IRQ 처리와 FPGA 암호화 데이터 경로 통합
-- **자료:** [프로젝트 설계](https://github.com/twotwoship/Assignment_Collection/tree/main/fpga_base_secure_storage_controller_datapath_proto) · [AES-XTS 학습 자료](https://github.com/twotwoship/Assignment_Collection/tree/main/aes_xts_nand)
 
 ## 추가 프로젝트·실습
 
@@ -102,6 +85,20 @@ MCU 제어, Linux 디바이스 드라이버, 장치 간 통신을 구현한 프�
 - [FPGA](https://github.com/twotwoship/Assignment_Collection/tree/main/fpga): Verilog RTL 실습
 
 </details>
+
+## 개인 공부
+
+### BeagleBone Black 초기 부트로더
+
+- **현재:** ARM 시작 코드, 스택·BSS 초기화, Watchdog 비활성화, UART0 제어 코드와 MLO 빌드 산출물 확보
+- **다음 단계:** 실기 부팅 확인, 예외 처리·GPIO 확장, DDR 초기화 및 두 번째 단계 로딩
+- **자료:** [코드·개발 범위](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/bbb/bbb-myrtos-stage1)
+
+### Zynq 기반 Linux–FPGA AES-XTS 보안 저장장치
+
+- **현재:** 시스템 구조 설계, AES-XTS 및 검증 방식 사전 학습
+- **개발 목표:** Linux 드라이버의 MMIO·DMA·IRQ 처리와 FPGA 암호화 데이터 경로 통합
+- **자료:** [프로젝트 설계](https://github.com/twotwoship/Assignment_Collection/tree/main/fpga_base_secure_storage_controller_datapath_proto) · [AES-XTS 학습 자료](https://github.com/twotwoship/Assignment_Collection/tree/main/aes_xts_nand)
 
 ## Directory Structure
 
