@@ -11,8 +11,8 @@
 | **STM32 Motor Control** | STM32F411RE, C, UART, PWM | Button/UART/PWM 기반 DC Motor 속도 및 방향 제어 구현 | [stm_motor_260724](https://github.com/twotwoship/stm_motor_260724) |
 | **FPGA Stopwatch / Clock** | Verilog HDL, Vivado, FPGA | FSM 기반 Stopwatch/Clock RTL 설계 및 시뮬레이션 | [fpga_clock](https://github.com/twotwoship/fpga_clock) |
 | **ATmega128A 디지털시계·계산기** | ATmega128A, C | DS1307 I²C 통신, LCD1602, 키패드, 상태 전환, 스택 기반 수식 계산 | [GitHub](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/15.RTC_LCD_calculator_) · [시연영상](https://youtu.be/GpRSiZHryco?si=fW76iYnFrm56GxAn) · [발표영상](https://youtu.be/l9xRuBvnAL4?si=AutO_3DuwMXs6mGB) |
-| **ATmega128A 장애물 회피·Bluetooth 차량** | ATmega128A, C | 초음파 센서, 외부 인터럽트, PWM 모터 제어, UART/Bluetooth, 수동·자동 주행 FSM | [AUTO_CAR](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/08.auto_car) |
-| **ATmega128A 세탁기** | ATmega128A, C | FSM 기반 세탁·헹굼·탈수 상태 전환, 타이머, PWM, UART 명령, FND 표시 | [세탁기](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/07.washing_machine) |
+| **ATmega128A 장애물 회피·Bluetooth 차량** | ATmega128A, C | 초음파 센서, 외부 인터럽트, PWM 모터 제어, UART/Bluetooth, 수동·자동 주행 FSM | [AUTO_CAR](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/998.auto_car_ver1) · [시연영상](https://youtube.com/shorts/NwpaM5rJNO4?si=0kVNORqGpj_G2QXO)|
+| **ATmega128A 세탁기** | ATmega128A, C | FSM 기반 세탁·헹굼·탈수 상태 전환, 타이머, PWM, UART 명령, FND 표시 | [세탁기](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/07.washing_machine) · [시연영상](https://youtube.com/shorts/kGAorJIMjIk?si=csbVia6MCDlKLIXu) |
 | **Jetson 2인 가위바위보·웹 스트리밍** | Jetson Orin Nano, Python, yolo11n | TensorRT 추론, 카메라 처리 | [가위바위보](https://github.com/twotwoship/Assignment_Collection/tree/main/AI_Deep_Learning/%EA%B3%BC%EC%A0%9C%EB%AC%BC(%EA%B0%80%EC%9C%84%EB%B0%94%EC%9C%84%EB%B3%B4)) |
 | **AVR 고추건조기** | C | 고추건조기 | [고추건조기]() |
 
