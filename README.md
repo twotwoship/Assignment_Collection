@@ -10,6 +10,7 @@
 | **STM32 Home IoT Wall Pad** | STM32, C, ADC, PWM, UART, Sensor, DC/Stepper Motor | STM32 센서·입력 및 출력·액추에이터 담당. 온습도/초음파/조도 측정, ADC, DC Motor, Step Motor, LED, Buzzer, Timer/PWM 구현 | [home_plus](https://github.com/twotwoship/home_plus) |
 | **STM32 Motor Control** | STM32F411RE, C, UART, PWM | Button/UART/PWM 기반 DC Motor 속도 및 방향 제어 구현 | [stm_motor_260724](https://github.com/twotwoship/stm_motor_260724) |
 | **FPGA Stopwatch / Clock** | Verilog HDL, Vivado, FPGA | FSM 기반 Stopwatch/Clock RTL 설계 및 시뮬레이션 | [fpga_clock](https://github.com/twotwoship/fpga_clock) |
+| **FPGA Microwave ** | Verilog HDL, Vivado, FPGA | FSM 기반 MicroWave RTL 설계 및 시뮬레이션 | [fpga_Microwave](https://github.com/twotwoship/fpga_microwave) |
 
 ---
 
