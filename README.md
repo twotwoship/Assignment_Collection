@@ -43,7 +43,7 @@ MCU 제어, Linux 디바이스 드라이버, 장치 간 통신을 구현한 프�
   세탁·헹굼·탈수 상태 전환, 타이머 기반 시간 관리, PWM 모터·UART 명령 처리  
   `ATmega128A` · `C` · `Timer/PWM` · `FSM` · [시연](https://www.youtube.com/shorts/kGAorJIMjIk)
 
-- **[STM32 고추건조기]()**  
+- **[STM32 고추건조기](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/gochu_dry)**  
   작성 중
   `STM32` · `C` · `Timer/PWM` · `FSM` · [시연]()
 
