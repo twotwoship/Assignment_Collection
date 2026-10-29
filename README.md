@@ -11,7 +11,7 @@ MCU 제어, Linux 디바이스 드라이버, 장치 간 통신을 구현한 프�
 
 - **담당 역할:** PCB 존재 여부·검사 상태 관리, PASS/FAIL 판정 로직, Jetson–STM32 인터페이스, 상태머신 기반 Step·Servo Motor 배출 제어
 - **주요 기술:** C · Python · STM32F411RE · Jetson Orin Nano
-- **자료:** [코드·상세 설명](https://github.com/clap-min99/board_guard) · [시연](https://www.youtube.com/shorts/YxTkjOZ_dDI)
+- **자료:** [코드·상세 설명](https://github.com/clap-min99/board_guard) · [시연](https://www.youtube.com/shorts/YxTkjOZ_dDI)  · [보고서](https://github.com/twotwoship/Assignment_Collection/tree/main/AI_Deep_Learning/board_guard)
 
 ### Smart Fan | Linux 디바이스 드라이버 기반 선풍기
 
