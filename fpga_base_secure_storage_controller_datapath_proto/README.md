@@ -1,6 +1,6 @@
 # Zynq SoC 기반 AES-XTS 하드웨어 가속 보안 스토리지 시스템
 
-> Linux 표준 저장장치 암호화 경로와 FPGA AES-XTS 가속기를 연동하는 HW/SW 통합 프로젝트
+> Linux 표준 저장장치 암호화·FPGA AES-XTS 가속기 통합 및 개발자 검증 도구 자체 설계 프로젝트
 
 **개발 기간: 4주 · 개발 인원: 3명 · 현재 상태: 구현·검증 완료 항목 없음**
 
@@ -10,6 +10,8 @@
 |---|---|
 | 팀 | 럭키커널 / Lucky Kernel |
 | 개발 목적 | Linux 저장장치 암호화의 FPGA 연산 가속 및 PS–PL 통합 검증 |
+| 사용자 기능 | 비밀번호 입력·볼륨 해제 후 파일 저장·읽기를 통한 암·복호화 |
+| 개발 도구 | 개발자가 관찰 항목·시험 명령을 추가할 수 있는 UART 기반 검증 Toolkit |
 | 대상 보드 | Zybo Z7-20 / Zynq-7000 SoC |
 | PS 역할 | Linux, 저장장치 I/O, 키 관리, Crypto Driver, DMA 요청, 진단 |
 | PL 역할 | AES-XTS 암·복호화, AXI4-Lite 제어, AXI4-Stream 데이터 처리 |
@@ -26,7 +28,7 @@
 - [PS–PL 인터페이스](#4-pspl-데이터제어-구조)
 - [Linux 드라이버](#6-linux-소프트웨어-설계)
 - [키 관리](#7-키-관리-설계)
-- [진단 콘솔](#8-uart-개발자-진단-콘솔)
+- [개발자 검증 도구](#8-uart-기반-개발자-검증-도구)
 - [검증·성능](#10-검증-계획)
 - [4주 일정·3명 역할](#12-4주-개발-일정)
 
@@ -49,7 +51,7 @@
 | Linux | Device Tree, Platform/Crypto Driver | 장치 바인딩 및 `xts(aes)` 구현 등록 |
 | 저장장치 | Crypto API·dm-crypt 연동 | 암호화 볼륨의 파일 쓰기·읽기·재오픈 성공 |
 | 키 관리 | PBKDF2-HMAC-SHA256, KEK/MEK, AES Key Wrap | 정상 비밀번호로 키 복원·볼륨 해제, 잘못된 비밀번호 거부 |
-| 진단 | UART Developer Diagnostic Console | MMIO·DMA·AES-XTS·IRQ·Driver 상태 및 오류 단계 확인 |
+| 개발 도구 | 확장형 UART Developer Toolkit | 필요한 계층의 상태 관찰·단위 시험 및 신규 검증 항목 추가 시연 |
 | 성능 | SW/FPGA 비교 | 동일 조건의 처리량·지연·CPU 사용률 측정 결과 확보 |
 
 ### 2.3 단계별 범위
@@ -81,24 +83,29 @@
 
 ```mermaid
 flowchart TB
-    subgraph US["PS / Linux User Space"]
-        APP["사용자 프로그램 / 파일 읽기·쓰기"]
-        KM["Key Manager / 비밀번호·MEK 관리"]
-        DIAG["UART Diagnostic Console"]
+    USER["사용자"]
+    DEV["개발자 PC"]
+    subgraph US["PS User Space"]
+        APP["사용자 앱"]
+        KM["키 관리자"]
+        DIAG["개발 도구"]
     end
-    subgraph KS["PS / Linux Kernel"]
+    subgraph KS["Linux Kernel"]
         FS["파일시스템"]
-        DM["dm-crypt / 암호화 블록 장치"]
-        API["Crypto API / xts(aes)"]
-        DRV["FPGA Crypto Platform Driver"]
-        DE["DMAEngine / AXI DMA Provider"]
-        IO["Block I/O / USB Storage Driver"]
+        DM["dm-crypt"]
+        API["Crypto API"]
+        DRV["Crypto Driver"]
+        DE["DMAEngine"]
+        IO["Block I/O"]
     end
-    subgraph PL["PL / FPGA"]
+    subgraph PL["FPGA"]
         DMA["AXI DMA"]
-        XTS["AES-XTS Accelerator"]
+        XTS["AES-XTS"]
     end
-    DISK[("USB 저장장치 / 암호문")]
+    DISK[("USB Storage")]
+    USER --> APP
+    APP -->|"비밀번호"| KM
+    DEV -->|"UART"| DIAG
     APP <--> FS
     FS <--> DM
     DM <--> API
@@ -108,9 +115,27 @@ flowchart TB
     DMA <--> XTS
     DM <--> IO
     IO <--> DISK
-    KM -->|"MEK 공급·볼륨 연결"| DM
-    DIAG -.->|"상태·시험 요청"| DRV
+    KM -->|"MEK 공급"| DM
+    DIAG -.->|"관찰·시험"| DRV
+    DIAG -.->|"상태 조회"| KM
 ```
+
+**도식 표기와 상세 역할**
+
+| 표기 | 상세 역할 |
+|---|---|
+| PS User Space / 사용자 앱 | PS의 Linux 사용자 영역 / 파일 읽기·쓰기 프로그램 |
+| 키 관리자 | Key Manager / 비밀번호·MEK 관리·볼륨 연결 |
+| 사용자 / 사용자 앱 | 비밀번호 입력·파일 저장·읽기 / 화면 또는 CLI 형태는 구현 시 확정 |
+| 개발자 PC / 개발 도구 | UART 기반 개발자 전용 명령 도구 / 관찰 항목·시험 명령 확장 |
+| Linux Kernel | PS의 Linux 커널 영역 |
+| dm-crypt | 암호화 블록 장치 계층 |
+| Crypto API | `xts(aes)` 암·복호화 요청 인터페이스 |
+| Crypto Driver | FPGA Crypto Platform Driver |
+| DMAEngine | DMAEngine API 및 AXI DMA Provider |
+| Block I/O | Linux Block I/O 및 USB Storage Driver |
+| AES-XTS | PL의 AES-XTS Accelerator |
+| USB Storage | 암호문을 저장하는 USB 저장장치 |
 
 - **연산 요청:** dm-crypt → Crypto API → FPGA Crypto Driver → DMAEngine → PL
 - **저장 경로:** 암호화 완료 → dm-crypt → Block I/O → USB 저장장치
@@ -128,28 +153,56 @@ dm-crypt는 Kernel Crypto API를 이용하는 블록 장치 암호화 계층이�
 | 제어 | CPU → M_AXI_GP0 → AXI4-Lite → AES 제어 레지스터 | 키·IV·모드·길이·시작·상태 |
 | 완료 | DMA IRQ → DMA Provider → Crypto Driver → Crypto API | 전송 완료·연산 상태 확인·요청 완료 |
 | 키 | Password → PBKDF2 → KEK → MEK Unwrap → Crypto setkey | 저장 키 보호·런타임 키 공급 |
-| 진단 | PC UART → Linux Console → 제한된 진단 인터페이스 | 상태·Self-test·오류 원인 확인 |
+| 개발·검증 | 개발자 PC → UART → Toolkit → 계층별 관찰·시험 모듈 | 선택한 상태 조회·반복 관찰·부분 시험·기능 확장 |
+
+### 3.3 사용자 기능과 개발 도구
+
+| 구분 | 사용자 기능 | 개발자 검증 도구 |
+|---|---|---|
+| 목적 | 비밀번호 기반 저장장치 사용·파일 암복호화 | 개발 중 필요한 내부 정보 관찰·시험 기능 제작 |
+| 입력 | 비밀번호, 대상 파일, 저장·읽기 동작 | 조회 대상, 관찰 조건, 시험 데이터·길이·반복 횟수 |
+| 출력 | 작업 성공·실패 및 파일 결과 | 상태·Counter·Event·측정값·비교 결과 |
+| 사용 시점 | 파일을 저장하거나 읽을 때 | 모듈 개발·Bring-up·통합·성능 분석·장애 재현 시 |
+| 동작 방식 | 사용자 요청에 맞는 암호화·저장 경로 실행 | 필요한 모듈·관찰 지점·시험만 선택 실행 |
+
+- 비밀번호 입력 후 오류 원인을 찾는 과정은 개발 도구의 활용 예시 중 하나
+- 개발 도구는 암호화 전체 과정을 순서대로 실행해야만 사용하는 구조로 제한하지 않음
+- 사용자 파일 기능은 dm-crypt 볼륨 해제 후의 파일 쓰기·읽기로 구현 / 파일별 독립 암호 포맷은 별도 확장
+- 개발 목표에 시스템 구현 역량과 함께 **필요한 개발 도구를 직접 설계·확장하는 역량** 포함
 
 ## 4. PS–PL 데이터·제어 구조
 
 ```mermaid
 flowchart TB
-    CPU["PS CPU / Crypto Driver"]
-    GP["M_AXI_GP0 / AXI4-Lite"]
-    REGS["AES 제어 레지스터 / MODE·KEY·IV·LEN·STATUS"]
-    TX[("PS DDR / 입력 Buffer")]
-    MM2S["AXI DMA MM2S"]
-    AES["AES-XTS Engine"]
-    S2MM["AXI DMA S2MM"]
-    RX[("PS DDR / 출력 Buffer")]
+    CPU["PS CPU"]
+    GP["M_AXI_GP0"]
+    REGS["AES Registers"]
+    TX[("DDR Input")]
+    MM2S["MM2S"]
+    AES["AES-XTS"]
+    S2MM["S2MM"]
+    RX[("DDR Output")]
     CPU --> GP --> REGS
     REGS --> AES
-    TX -->|"S_AXI_HP0 경유"| MM2S
+    TX -->|"S_AXI_HP0"| MM2S
     MM2S -->|"AXI4-Stream"| AES
     AES -->|"AXI4-Stream"| S2MM
-    S2MM -->|"S_AXI_HP0 경유"| RX
-    S2MM -.->|"IRQ / DMAEngine 완료"| CPU
+    S2MM -->|"S_AXI_HP0"| RX
+    S2MM -.->|"DMA IRQ"| CPU
 ```
+
+**도식 표기와 인터페이스**
+
+| 표기 | 상세 의미 |
+|---|---|
+| PS CPU | Crypto Driver가 실행되는 PS CPU |
+| M_AXI_GP0 | AXI4-Lite 제어 경로 |
+| AES Registers | AES 제어 레지스터 / MODE·KEY·IV·LEN·STATUS |
+| DDR Input / DDR Output | PS DDR의 입력 Buffer / 출력 Buffer |
+| MM2S / S2MM | AXI DMA의 Memory-to-Stream / Stream-to-Memory 채널 |
+| AES-XTS | AES-XTS Engine |
+| S_AXI_HP0 | AXI DMA의 PS DDR 접근 경로 |
+| DMA IRQ | IRQ 수신 후 DMAEngine을 통한 완료 통지 |
 
 ### 4.1 하드웨어 구성
 
@@ -215,7 +268,7 @@ AXI DMA의 MM2S/S2MM 및 동작 모드는 [AMD PG021](https://docs.amd.com/r/en-
 | Crypto Driver | skcipher 등록, setkey, encrypt/decrypt, 비동기 완료 | `xts(aes)` Provider |
 | Key Manager | MEK 생성·Wrap/Unwrap·비밀번호 변경·잠금 | User-space C 도구 |
 | Volume Manager | dm-crypt Mapping 생성·해제·재오픈 | 실행 도구·설정 파일 |
-| Diagnostic Tool | 제한된 상태 조회·시험 요청 | UART CLI |
+| Developer Toolkit | 명령 해석·모듈 등록·관찰 조건·부분 시험·결과 기록 | 확장형 UART CLI·관찰/시험 모듈 |
 | Test/Benchmark | Golden 비교, 파일·블록 검증, 성능 측정 | 테스트·CSV·측정 기록 |
 
 ### 6.2 암호 요청 처리 순서
@@ -260,14 +313,14 @@ AXI DMA의 MM2S/S2MM 및 동작 모드는 [AMD PG021](https://docs.amd.com/r/en-
 ```mermaid
 flowchart TB
     PASS["Password"]
-    PARAM["Salt / 반복 횟수"]
-    KDF["PBKDF2-HMAC-SHA256"]
-    KEK["KEK / Key Encryption Key"]
-    WRAPPED[("저장된 Wrapped MEK")]
-    UNWRAP["AES Key Unwrap"]
-    MEK["MEK / K1 + K2"]
-    DM["dm-crypt / Crypto API setkey"]
-    FPGA["FPGA AES-XTS"]
+    PARAM["KDF 설정"]
+    KDF["PBKDF2"]
+    KEK["KEK"]
+    WRAPPED[("Wrapped MEK")]
+    UNWRAP["Key Unwrap"]
+    MEK["MEK"]
+    DM["dm-crypt"]
+    FPGA["AES-XTS"]
     PASS --> KDF
     PARAM --> KDF
     KDF --> KEK
@@ -275,6 +328,20 @@ flowchart TB
     WRAPPED --> UNWRAP
     UNWRAP --> MEK --> DM --> FPGA
 ```
+
+**도식 표기와 키 계층**
+
+| 표기 | 상세 의미 |
+|---|---|
+| Password | 사용자 비밀번호 |
+| KDF 설정 | Salt 및 반복 횟수 |
+| PBKDF2 | PBKDF2-HMAC-SHA256 |
+| KEK | Key Encryption Key / MEK 보호용 키 |
+| Wrapped MEK | 저장된 암호화 MEK |
+| Key Unwrap | AES Key Unwrap |
+| MEK | 데이터 암호화 키 / XTS K1 + K2 |
+| dm-crypt | Crypto API setkey 경로로 MEK 공급 |
+| AES-XTS | FPGA AES-XTS Engine |
 
 ### 7.2 생성·해제·잠금
 
@@ -332,26 +399,114 @@ flowchart TB
 - Root 권한 탈취, 실행 중 RAM 추출, 물리적 Side-channel, 보안 부팅 우회는 별도 과제
 - PS에서 PL로 키를 공급하는 구조이며 Hardware Root of Trust 구현으로 표기하지 않음
 
-## 8. UART 개발자 진단 콘솔
+## 8. UART 기반 개발자 검증 도구
 
-**구성 제안:** PC ↔ PS UART ↔ Linux Terminal ↔ C Diagnostic CLI ↔ Driver 상태·Self-test 인터페이스
+### 8.1 개발 목적
 
-| 명령 예시 | 조회·시험 내용 | 관찰 지점 |
-|---|---|---|
-| `status` | Driver Bind·키 설정 여부·Idle/Busy·마지막 오류 | 전체 상태 |
-| `mmio-test` | IP ID·Version·허용된 시험 Register | AXI4-Lite |
-| `dma-test` | Known Pattern Loopback·길이·완료·비교 | DDR·DMA |
-| `aes-test` | AES/XTS Known Vector 결과 | 연산부 |
-| `irq-stat` | DMA Callback·IRQ·완료 수 | 완료 경로 |
-| `crypto-stat` | 요청 수·Byte·실패·현재 Provider | 실제 가속 사용 |
-| `selftest` | MMIO → DMA → AES-XTS 순차 진단 | 단계별 PASS/FAIL |
-| `recover` | 유휴·장애 상태에서 통제된 재초기화 | Timeout·Reset |
+- 시스템 특성에 맞는 내부 관찰·시험 도구 직접 설계
+- 개발자가 필요한 계층·값·Event·조건 선택
+- 모듈별 상태 조회, 독립 시험, 반복 관찰, 결과 저장
+- 개발 중 새로 필요한 관찰 항목·시험 명령 추가
+- 고정 명령 목록의 사용법보다 **관찰 지점 설계·도구 확장·검증 근거 확보**를 핵심 성과로 설정
 
-- 명령명: 구현 전 제안 / 실제 실행 가능한 명령으로 간주하지 않음
-- 상태 출력: 요청 ID, 단계, 길이, 소요시간, 오류 코드 중심
-- Password·KEK·MEK·Key Register 값 출력 금지
-- 운영 I/O 중 위험한 Self-test·Reset·임의 Register 변경 차단
-- 통합 Driver와 같은 상태·잠금 체계를 사용해 진단과 운영 경로 충돌 방지
+**기본 접근:** 개발자 PC ↔ PS UART ↔ Linux Terminal ↔ C Developer Toolkit
+
+### 8.2 도구 내부 구조
+
+```mermaid
+flowchart TB
+    PC["개발자 PC"]
+    UART["PS UART"]
+    CLI["명령 해석기"]
+    REG["모듈 등록부"]
+    OBS["관찰 모듈"]
+    TEST["시험 모듈"]
+    HOOK["관찰 접점"]
+    TARGET["대상 모듈"]
+    LOG["결과 기록"]
+    PC <--> UART
+    UART <--> CLI
+    CLI --> REG
+    REG --> OBS
+    REG --> TEST
+    OBS <--> HOOK
+    HOOK <--> TARGET
+    TEST <--> TARGET
+    OBS --> LOG
+    TEST --> LOG
+    LOG --> CLI
+```
+
+| 구성 | 설계 내용 |
+|---|---|
+| 명령 해석기 | 대상·명령·옵션 파싱, 입력 검증, Help |
+| 모듈 등록부 | 모듈명·Command Table·Handler 등록 / C 함수 단위 확장 |
+| 관찰 모듈 | 상태 Snapshot, 선택 Event Trace, Counter·시간 측정 |
+| 시험 모듈 | Known Vector·Loopback·조건별 반복 시험·기대값 비교 |
+| 관찰 접점 | User SW Hook, Driver 상태·Event Buffer, MMIO 상태·PL Counter |
+| 결과 기록 | 시각·요청 식별자·항목·값·결과·오류 기록, Text/CSV 출력 |
+
+### 8.3 관찰·검증 대상 예시
+
+| 대상 | 개발자가 선택할 수 있는 정보·시험 |
+|---|---|
+| 사용자 SW | 선택 작업, 처리 길이, 시작·종료, 반환 오류 |
+| Key Manager | KDF·Unwrap 성공 여부, 소요시간, 키 준비 상태 |
+| Crypto API·Driver | 선택 Provider, 요청 접수·완료, Queue, 오류 단계 |
+| MMIO | IP ID·Version·허용된 제어/상태 Register |
+| DMA | 요청·완료 Byte, 채널 상태, Callback, Timeout |
+| AES-XTS | Busy/Done/Error, 시험 Vector 일치, 입력·출력 Block 수 |
+| IRQ | 발생·처리·요청 완료 Counter, 시각·지연 |
+| Storage | Mapping 상태, Read/Write 결과, 원문·복호문 비교 |
+
+- 위 항목은 관찰 지점 선정 예시 / 모든 항목을 항상 출력하는 방식으로 제한하지 않음
+- 새 항목은 대상 모듈의 Hook·Counter·상태 Interface와 도구 Handler를 함께 추가
+- PL 내부 신호는 노출할 상태 Register·Counter를 설계하고, 세부 Timing은 ILA로 보완
+- UART는 개발 도구의 명령·결과 통로 / 파일 데이터·암호화 연산의 필수 경유 경로로 사용하지 않음
+
+### 8.4 명령·활용 예시
+
+| 명령 예시 | 사용 목적 |
+|---|---|
+| `help` | 등록된 모듈·명령·옵션 확인 |
+| `show driver` | Driver·Queue·키 준비 여부·마지막 오류 조회 |
+| `show mmio` | 허용된 Register Snapshot 확인 |
+| `watch irq` | IRQ Counter·시각 변화 반복 관찰 |
+| `trace dma irq` | 필요한 Event만 선택 수집 |
+| `test dma` | 사용자 파일 작업 없이 Known Pattern 전송 시험 |
+| `test xts` | 공개 시험 키·IV·입력으로 Golden 비교 |
+| `crypto-stat` | Provider·HW 요청·처리 Byte 확인 |
+| `selftest` | 개발자가 선택한 시험들의 묶음 실행 |
+| `recover` | 통제된 재초기화 및 정상 요청 복구 확인 |
+
+- 명령·옵션은 설계 예시 / 실제 구현 시 Module Command Table로 확정
+- 시험 데이터 길이·반복 횟수·관찰 주기·Event 종류는 필요에 따라 옵션화
+- DMA 단독 검증, 특정 Register 확인, IRQ 변화 관찰 등 부분 기능만 독립 실행 가능
+- 비밀번호→파일 처리 실패 분석은 여러 활용 시나리오 중 하나로 유지
+
+### 8.5 관찰 접점·시험 인터페이스
+
+- User SW: 상태·오류·시간을 수집하는 Hook 및 결과 Record
+- Kernel: 제한된 상태 조회 Interface와 크기가 제한된 Event Buffer
+- 시험 요청: Driver가 제공하는 통제된 시험 Interface 사용
+- UART 출력: Snapshot·수집 결과 중심 / 고빈도 Event는 먼저 Buffer에 수집 후 조회
+- 연동 식별: 필요 시 사용자 작업 ID와 Driver 하위 요청 ID를 연결 / 일대일 대응으로 가정하지 않음
+- 측정 영향: Trace 활성화·출력 여부와 Buffer Overflow 수를 결과에 기록
+- 운영 충돌: 동일 Driver의 상태·잠금 사용 / I/O 중 Reset·위험한 시험 차단
+- 비밀정보: Password·KEK·MEK·실사용 평문 대신 상태·길이·Counter·공개 Test Vector 관찰
+- 관찰 한계: Linux/Driver가 실행 가능한 범위에서 사용 / Kernel 정지·PL 세부 신호는 별도 로그·ILA로 보완
+
+### 8.6 개발 도구 제작 역량의 증빙
+
+| 증빙 | 제시 내용 |
+|---|---|
+| 설계 | 무엇을 확인하려 했는지와 필요한 Hook·Command·결과 형식 |
+| 구현 | Parser·Registry·Handler 및 대상 모듈의 관찰 Interface |
+| 활용 | 선택한 내부 상태를 조회하거나 부분 시험으로 원인 범위 축소 |
+| 확장 | 개발 중 발견한 요구에 맞춰 새 관찰 항목·시험 명령 추가 |
+| 검증 | 수정 전후 값·Event·시험 결과 비교 및 재현 절차 |
+
+**완료 기준 제안:** 공통 도구 구조 + 선택한 관찰/시험 모듈 + 신규 검증 항목 추가 사례 + 재현 가능한 결과 기록
 
 ## 9. 주요 동작 시나리오
 
@@ -380,6 +535,15 @@ flowchart TB
 - 장치 제거: 신규 요청 차단 → 진행 요청 종료 → 키·자원 정리
 - 복구 검증: 장애 처리 후 다음 정상 요청 성공 여부 확인
 
+### 9.4 개발 도구 활용 예시
+
+- 모듈 개발: UART에서 DMA 단독 시험 → 전송·완료 상태 확인
+- 통합 분석: 필요한 Crypto·DMA·IRQ Event 선택 → 요청 진행 위치 비교
+- 성능 분석: 데이터 길이별 처리시간·복사·DMA 비용 관찰
+- 기능 확장: 새로운 관찰 Hook·Command Handler 추가 → 도구에서 결과 확인
+- 사용자 작업 분석: 비밀번호·파일 작업 실패 시 필요한 항목만 선택 조회
+- 위 시나리오는 활용 예시 / 고정된 실행 순서·필수 진단 절차로 제한하지 않음
+
 ## 10. 검증 계획
 
 | ID | 검증 대상 | 입력·방법 | 통과 기준 |
@@ -396,6 +560,8 @@ flowchart TB
 | T10 | 키 관리 | 정상·오입력·비밀번호 변경 | 정상 해제 / 오입력 거부 / 변경 후 재오픈 |
 | T11 | 예외 처리 | 잘못된 길이·Timeout·Reset | 자원 정리·오류 반환·후속 정상 요청 성공 |
 | T12 | 성능 | SW/HW 동일 조건 반복 측정 | 원시 결과·환경·측정 경계 기록 |
+| T13 | 개발 도구 | 선택 모듈 관찰·부분 시험·새 Handler 등록 | 기존 항목 정상 동작 및 신규 항목 결과 조회·기록 |
+| T14 | 관찰 신뢰성 | Trace On/Off·Buffer 포화·운영 I/O 병행 | 측정 영향·누락 표시, 시험 충돌 방지 |
 
 **추가 확인 사항**
 
@@ -440,10 +606,10 @@ flowchart TB
 
 | 주차 | Linux/Driver | FPGA/RTL | Key·검증·통합 | 주간 완료 기준 |
 |---|---|---|---|---|
-| 1주 | Linux 부팅·DT/MMIO·SW dm-crypt 기준선 | AES IP 선정·AES/XTS TB·AXI/DMA 기본 설계 | Golden Vector·키 형식·시험 규칙·UART CLI 골격 | 환경 고정, Golden 재현, SW 볼륨 동작, 인터페이스 명세 |
-| 2주 | DMAEngine Loopback·IRQ·Crypto Driver 골격 | XTS 암복호화·Stream·Register·실기 통합 | Key Wrap/Unwrap·파일 검증 도구·자동 비교 | DMA 왕복 및 FPGA 암복호화 Golden 일치 |
-| 3주 | skcipher 등록·요청 처리·dm-crypt 연결 | HW 오류·Reset·Timing·ILA 디버깅 | Password→MEK→Mapping·진단 명령 통합 | 실제 HW 사용을 증명한 파일 I/O·키 해제 |
-| 4주 | Timeout·동시성·제거 처리·통합 수정 | 기능 안정화·자원/Timing 보고서 | 재오픈·예외·SW/HW 측정·발표·시연 | 통합 검증·재현 자료·성능 보고서 |
+| 1주 | Linux 부팅·DT/MMIO·SW dm-crypt 기준선 | AES IP 선정·AES/XTS TB·AXI/DMA 기본 설계 | Golden·키 형식·Toolkit Parser/Registry·관찰 명세 | 환경·Golden·SW 볼륨·도구 확장 구조 |
+| 2주 | DMAEngine Loopback·IRQ·관찰 Hook·Crypto Driver 골격 | XTS 암복호화·Stream·Register·관찰 Counter | Key Wrap/Unwrap·파일 검증·관찰/시험 모듈 | DMA 왕복·FPGA Golden 일치·부분 시험 도구 |
+| 3주 | skcipher·dm-crypt·요청 Event 연동 | HW 오류·Reset·Timing·ILA 디버깅 | Password→MEK→Mapping·선택 관찰·신규 명령 추가 | 실제 HW 파일 I/O·키 해제·도구 확장 사례 |
+| 4주 | Timeout·동시성·제거 처리·통합 수정 | 기능 안정화·자원/Timing 보고서 | 재오픈·예외·성능·도구 활용 증빙·발표 | 통합·재현 자료·개발 도구 제작/활용 시연 |
 
 **일정 운영**
 
@@ -459,11 +625,12 @@ flowchart TB
 |---|---|---|---|
 | A — Linux/Driver | Device Tree, Platform Driver, DMAEngine, Crypto API, IRQ·Timeout | B와 Register/Stream 합의, C와 dm-crypt 연결 | DTS·Kernel Module·Driver 시험 결과 |
 | B — FPGA/RTL | AES-XTS RTL, AXI4-Lite/Stream, DMA Block Design, Clock/Reset | A와 PS–PL 통합, C와 Golden 비교 | RTL·TB·Bitstream·자원/Timing 보고서 |
-| C — Key/Test/System | Golden Model, Key Manager, Volume 도구, UART CLI, Benchmark | A와 진단·키 공급, B와 Vector·ILA 확인 | User 도구·자동 검증·CSV·통합 시연 |
+| C — Key/Test/Tool | Golden Model, Key Manager, Volume 도구, UART Toolkit, Benchmark | A/B와 관찰 접점·시험 Interface·키 공급·Vector 연동 | 확장형 개발 도구·자동 검증·CSV·통합 시연 |
 
 - 실명 배정: 미정
 - 각 담당은 코드·명세·개별 검증·통합 수정까지 책임
 - 전체 리뷰: 요청 형식, Key/IV 규칙, 오류 코드, Gate 결과
+- 개발 도구 공통부·명령 Handler: C 주도 / A는 Driver Hook, B는 PL 상태·Counter 제공
 
 ## 14. 단계별 완료 기준과 현재 상태
 
@@ -475,7 +642,7 @@ flowchart TB
 | G3 | Linux DMA Loopback·IRQ | 전송·완료·비교 로그 | 미완료 |
 | G4 | FPGA 메모리 암복호화·파일 왕복 | Golden 일치·Hash·원문 비교 | 미완료 |
 | G5 | Crypto API·dm-crypt 실제 HW 경로 | Provider·HW Counter·I/O 결과 | 미완료 |
-| G6 | Password Unlock·재오픈·진단·복구 | 시나리오별 PASS/FAIL | 미완료 |
+| G6 | Unlock·재오픈·복구·도구 관찰/시험·신규 항목 확장 | PASS/FAIL·확장 전후 코드·UART 결과 | 미완료 |
 | G7 | SW/HW 성능·자원·통합 시연 | CSV·보고서·재현 절차·영상 | 미완료 |
 
 ## 15. 주요 위험과 대응
@@ -499,20 +666,32 @@ flowchart TB
 - [ ] Vivado Block Design·RTL·Testbench·Bitstream
 - [ ] Device Tree·Kernel Config·Crypto Driver
 - [ ] OpenSSL Golden Model·Vector·자동 비교 도구
-- [ ] Key Manager·Volume 도구·UART Diagnostic CLI
+- [ ] Key Manager·Volume 도구·확장형 UART Developer Toolkit
+- [ ] Toolkit 명령 등록 구조·관찰 Hook·시험 모듈·신규 항목 확장 사례
 - [ ] 파일·블록·키·오류·재부팅 검증 기록
 - [ ] SW/HW 성능 CSV·FPGA 자원/Timing 보고서
 - [ ] 설치·빌드·실행·복구 절차 및 최종 시연 영상
 
-### 16.2 최종 시연 순서
+### 16.2 사용자 기능 시연 예시
 
 1. 보드 부팅 → Driver·FPGA 상태·키 미설정 확인
 2. Password 입력 → MEK Unwrap → 암호화 볼륨 해제
 3. 파일 쓰기 → FPGA 요청·DMA 완료 Counter 확인
 4. 파일 읽기 → 원문 Hash·Byte 일치 확인
 5. Mapping 해제 → 잘못된 Password 거부 → 정상 Password 재오픈
-6. 진단 Self-test·Timeout/오류 처리·정상 복구 확인
+6. 필요한 관찰/시험 명령 선택·Timeout/오류 처리·정상 복구 확인
 7. SW/HW 처리량·지연·CPU 사용·FPGA 자원 비교
+
+### 16.3 개발 도구 제작·활용 시연 예시
+
+1. 확인하려는 개발 과제와 필요한 내부 정보 제시
+2. UART에서 관찰 항목 선택 또는 단위 시험 실행
+3. 상태·Event·측정값으로 문제 범위 확인
+4. 새로 필요한 Hook·Command Handler 추가
+5. 추가된 명령의 결과와 수정 전후 시험 비교
+
+- 사용자 암호화 기능과 별도로 개발 도구의 구조·확장 가능성·활용 근거 제시
+- 시연 대상과 순서는 실제 개발 이슈에 맞게 선정
 
 ## 17. 착수 시 확정할 항목
 
@@ -524,15 +703,12 @@ flowchart TB
 | HW 주소·IRQ·Clock·DMA 설정 | Block Design·DT와 동시 고정 |
 | Key Metadata·전달·복구 방식 | 학습용 Format·권한·수명주기 합의 |
 | 성능 목표 수치 | SW 기준선 측정 후 설정 |
+| 개발 도구 관찰·시험 항목 | Bring-up 단계에 필요한 모듈부터 선정 / 개발 중 추가 |
 | 실명별 역할·절대 일정 | 3명 배정 및 착수일 확정 |
 
 ## 18. 참고 기준
 
 **입력 자료**
-
-- 기존 `fpga_base_secure_storage_controller_datapath_proto/README.md`: PS–PL Datapath, 파일 왕복 검증, 키 복구·수명주기 아이디어
-- `6팀_럭키커널_프로젝트 계획서(이).hwp`: Crypto API·dm-crypt, DMAEngine, PBKDF2/AES Key Wrap, Developer Diagnostic Console 목표
-- 사용자 확정 조건: 4주·3명·현재 구현/검증 완료 항목 없음·전체 범위 포함
 
 **공식 기술 문서**
 
