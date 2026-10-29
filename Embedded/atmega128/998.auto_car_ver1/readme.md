@@ -1,100 +1,68 @@
-used function 
+# ATmega128A 장애물 회피·Bluetooth 제어 차량
 
-Ignore the comments.
+> 초음파 센서 기반 장애물 회피 및 Bluetooth 수동 제어
+> 
+> 보고서 첨부
 
+## 1. 프로젝트 개요
 
+| 항목 | 내용 |
+|---|---|
+| 개발 목적 | 센서·통신·모터를 연동한 차량 제어 |
+| MCU | ATmega128A |
+| 개발 언어 | C |
+| 주요 기술 | FSM, UART, PWM, Timer, 외부 인터럽트 |
+| 입력 장치 | 초음파 센서 3개, Bluetooth, 버튼 |
+| 출력 장치 | DC 모터, FND, LED |
 
+## 2. 시연 자료
 
+- [차량 주행 시연](https://www.youtube.com/shorts/NwpaM5rJNO4)
 
-void \_non\_delay\_left\_make\_trigger\_processing(void){ // 딜레이 함수 쓰지 않고 초음파 쏘기 좌 통합
+## 3. 주요 구현
 
-&#x09;// 어떻게 돌아가야하냐면 하이상태를 15us 유지하고 로우로 내려야됨.
+| 구분 | 구현 내용 |
+|---|---|
+| 수동 주행 | Bluetooth 명령 기반 전진·후진·좌회전·우회전·정지 |
+| 자동 주행 | 좌·중앙·우 거리 비교 기반 장애물 회피 |
+| 모터 제어 | PWM 기반 속도·방향 제어 |
+| 상태 관리 | 수동·자동·주행 기록 확인 모드 |
+| 통신 | UART 수신 인터럽트 기반 명령 수신 |
+| 표시 | FND 기반 주행 정보 표시 |
 
-&#x09;// 내리는건 타이머 인터럽트에서 해버리자.
+## 4. 비차단 처리 개선
 
-&#x09;if(high\_left\_pulse == 0 \&\& low\_left\_pulse == 0 \&\& \_non\_delay\_left\_trigger\_wait == 0){	
+| 항목 | 기존 방식 | 개선 방식 |
+|---|---|---|
+| Trigger 생성 | `_delay_us()` 기반 대기 | 타이머 카운터 기반 경과 시간 확인 |
+| 처리 구조 | HIGH·대기·LOW 순차 실행 | HIGH 설정·시간 확인·LOW 전환 분리 |
+| Echo 감지 | 외부 인터럽트 | 상승·하강 플래그 활용 |
+| 개선 범위 | 기존 센서 처리 | 왼쪽 센서 Trigger 처리 우선 적용 |
 
-&#x09;	\_non\_delay\_left\_make\_trigger\_high();		// 쏘고나서 15us 만큼 기다려야됨
+**처리 순서**
 
-&#x09;	\_non\_delay\_left\_trigger\_wait = \_us\_count;
+1. Trigger HIGH 및 시작 시각 기록
+2. 경과 시간 확인 후 Trigger LOW
+3. 외부 인터럽트로 Echo 상승·하강 감지
+4. 완료 플래그 확인 및 다음 측정 준비
 
-&#x09;}
+## 5. 현재 상태
 
-&#x09;if(\_non\_delay\_left\_trigger\_wait != 0){ // 하이로 쏜상태임.
+- 왼쪽 센서 비차단 Trigger 처리 코드 작성
+- main 루프에서 해당 처리 함수 실행
+- 주행 FSM 호출부 주석 처리
+- 전체 주행 제어와의 통합·동작 검증 필요
 
-&#x09;	if ((\_us\_count - \_non\_delay\_left\_trigger\_wait) >= 1)
+## 6. 소스 구성
 
-&#x09;	{
-
-&#x09;		\_non\_delay\_left\_make\_trigger\_low();
-
-&#x09;	}
-
-&#x09;}
-
-&#x09;if(high\_left\_pulse == 1 \&\& low\_left\_pulse == 1){ // 이거는 이제 에코가 다 들어오고나면 000으로 다 내려서 다시 하이를 쏠수있게 준비
-
-&#x09;	high\_left\_pulse = 0;
-
-&#x09;	low\_left\_pulse = 0;
-
-&#x09;	\_non\_delay\_left\_trigger\_wait = 0;
-
-&#x09;}
-
-}
-
-
-
-ISR(INT4\_vect){	// echo핀에서 나온 게 들어간다 보드로
-
-&#x09;// 타이머 2번을 쓸꺼임 타이머 2번은 분주를 하지 않음.
-
-&#x09;//tcnt2 노분주로 타이머2인터럽트가 들어올때마다 1개씩 커짐.
-
-&#x09;if(ECHO\_LAFT\_PORT \& ( 1 << ECHO\_LAFT\_PIN)){	// 1. high edge
-
-&#x09;	left\_count = \_us\_count;		// 딱 상승이 발생햇어
-
-&#x09;	high\_left\_pulse = 1;
-
-&#x09;}else{	// 2. low edge
-
-&#x09;	low\_left\_pulse = 1;
-
-&#x09;	\_non\_delay\_left\_trigger\_wait = 0;
-
-&#x09;}
-
-}
-
-
-
-ISR(TIMER2\_OVF\_vect){		// 16us timer 오버플로발생해서 저시간마다 들어옴.
-
-&#x09;TCNT2 = 0;				// 0.016/256 카운터 ㅋㅋ 1틱당 0.625us
-
-&#x09;\_us\_count++;			//  16us timer 마다 커지는거임.
-
-&#x09;if(\_us\_count> \_US\_COUNT\_RESET){
-
-&#x09;	\_us\_count= 1;		// 트리거 체크때문에 0으로 만들면 안됨.
-
-&#x09;}
-
-}
-
-
-
-
-
-
-
-&#x09;while(1){	
-
-&#x09;	\_non\_delay\_left\_make\_trigger\_processing();
-
-&#x09;	}
-
-
-
+| 파일 | 역할 |
+|---|---|
+| [main.c](./main.c) | 초기화·실험 루프 |
+| [menu.c](./menu.c) | 주행 모드·상태 관리 |
+| [motor.c](./motor.c) | 모터 구동·속도 제어 |
+| [ultrasonic.c](./ultrasonic.c) | 초음파 Trigger·측정 처리 |
+| [interrupt.c](./interrupt.c) | 타이머·외부 인터럽트 |
+| [uart1.c](./uart1.c) | Bluetooth 통신 |
+| [uart0.c](./uart0.c) | PC UART 통신 |
+| [fnd.c](./fnd.c) | 주행 정보 표시 |
+| [button.c](./button.c) | 버튼 입력 |
