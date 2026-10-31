@@ -101,7 +101,7 @@ The Jetson project has code and models available. Setup instructions and test re
 - **Goal:** Connect Linux driver MMIO, DMA, and IRQ handling to an FPGA encryption path.
 - **Status:** Planning stage; implementation and verification are not complete.
 
-[Project Plan](https://github.com/twotwoship/Assignment_Collection/tree/main/fpga_base_secure_storage_controller_datapath_proto) · [Study Notes](https://github.com/twotwoship/Assignment_Collection/tree/main/aes_xts_nand)
+[Project Plan](https://github.com/twotwoship/mini_Cipher_Fabric) · [Study Notes](https://github.com/twotwoship/Assignment_Collection/tree/main/aes_xts_nand)
 
 ---
 
