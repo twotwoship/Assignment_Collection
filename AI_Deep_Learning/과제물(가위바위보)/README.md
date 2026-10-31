@@ -1,7 +1,17 @@
-제출자 이양배
+# Two-Player Rock–Paper–Scissors
 
-실행방법 
-python rps_two_player_game_v3.py
+Submitted by Yangbae Lee.
 
-한자 폰트가 있습니다.
+## Run
+
+```bash
+python rps_two_player_game_v.py
+```
+
+## CJK Font Support
+
+Install Pillow and the Noto CJK fonts for Chinese, Japanese, and Korean characters:
+
+```bash
 sudo apt install python3-pil fonts-noto-cjk
+```

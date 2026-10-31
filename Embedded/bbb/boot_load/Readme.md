@@ -1,37 +1,54 @@
-# BBB 기준으로 작성하였음. 
+# BeagleBone Black Boot Notes
 
-### 준비물 및 단계 / U-boot 사용 기준
-1. 우분투 환경 / 필자는 26.04 버전 / WSL2 사용
-2. BBB용 크로스 컴파일러
-3. 여러 패키지들 / 아래 정도 깔고 나머지는 그때 필요할때마다 설치해서 잘기억안남.
-* autoconf automake bison bzip2 cmake flex g++ gawk gcc gettext git gperf help2man libncurses5-dev \
-libstdc++6 libtool libtool-bin make patch python3-dev rsync texinfo unzip wget xz-utils
-4. sd카드 2개의 파티션으로 만드셈 1번은 64MiB FAT32 포맷, 2번은 ext4 1기가짜리 
-5. u-boot 2021.01 버전 / make 할때 크로스컴파일러로 하기 / MLO u-boot.img가 만들어질텐데 이 두갤 1번 sd카드 1번 파티션에 넣으셈.
-    make ARCH=arm \     CROSS_COMPILE=arm-cortex_a8-linux-gnueabi- \     am335x_evm_defconfig
-6. BBB는 시리얼 디버거를 기본적으로 제공해줘서 UART가 J1으로 보드상에 뽑혀져 있음. 대충 모듈 연결하면됨, 공홈에서 사라는거 사도 되고. 쿠팡에 8천원에 파는듯.
-7. MobaXterm 사용했고 115200baud, 8 data bis, No parity, 1 stop bit, Flow control None
-8. 터미널 연상태로 sd카드 넣고 S2 버튼 누른 상태로 전원인가하고 바로 아무키 갈기셈 바로 다음으로 넘어감
-9. 짜잔 완료입니다. 이제 베어메탈을 만들던 RTOS를 만들던 기타등등 원하는데로 할수있다.
+These notes were written for the BeagleBone Black (BBB).
 
-# 개념 설명
-## 1단계 : ROM 코드
-1. 칩 제조시 AM335x 내부 롬에 롬코드가 작성되어서 SPL(Secondary Program Loader, 내가 만들어 넣은 MLO)를 내부 SRAM(64KiB)에 로드함 롬 코드 단계 긑에서 SPL 코드의 시작으로 점프함.
+## Prerequisites and Steps Using U-Boot
 
-## 2단계 : SPL 코드
-1. 롬 코드에서 SPL로 점프 한뒤에 SRAM 내부에서 실행되는데 이때 TPL(내가 만든 U-boot.img)을 DRAM으로 로드함.
-2. 반드시 DDR 초기화를 해줘야됨.
+1. Prepare an Ubuntu environment. The author's setup used Ubuntu 26.04 on WSL2.
+2. Install a cross-compiler for the BBB.
+3. Install the packages below. Other packages were installed as needed and were not fully recorded:
 
-## 3단계 : TPL 코드
-1. TPL 실행시 커널을 DRAM으로 로드한다. 원하는 경우 FDT나 초기 RAM disk를 추가 가능.
-* 여기에서 DDR초기화를 반드시해줘야됨.
+   ```text
+   autoconf automake bison bzip2 cmake flex g++ gawk gcc gettext git gperf help2man libncurses5-dev
+   libstdc++6 libtool libtool-bin make patch python3-dev rsync texinfo unzip wget xz-utils
+   ```
 
-![ex_screenshot](../../../img/BBB_BOOT_LOAD.png)
+4. Create two partitions on the SD card: a 64 MiB FAT32 first partition and a 1 GiB ext4 second partition.
+5. Build U-Boot 2021.01 with the cross-compiler. Copy the generated `MLO` and `u-boot.img` files to the first SD card partition. Example configuration command:
 
-# 작성
-1. 1단계 : MLO DDR(512mb)을 초기화하고 같이 넣엇던 u-boot.img를 불러옴
-2. 2단계 : u-boot.img 실행해서 명령어 창을 제공해줌 ^오^
+   ```bash
+   make ARCH=arm CROSS_COMPILE=arm-cortex_a8-linux-gnueabi- am335x_evm_defconfig
+   ```
 
-### 고민사항
-* 내가 직접 MLO를 만들어서 DDR초기화 시켜가지고 TPL을 실행시켜도 되고
-* 내가 U-boot 딸깍 해서 U-boot 명령어 창에서 내가만든 rtos나 베어메탈을 해도되고 리눅스를 올려도되고 기타등등 해보자
+6. Connect a serial debug adapter to the BBB's J1 UART header. The original setup notes mention an adapter recommended by the board vendor or a locally available alternative.
+7. Open a serial terminal. The author's setup used MobaXterm with 115200 baud, 8 data bits, no parity, 1 stop bit, and no flow control.
+8. With the terminal open and SD card inserted, hold S2 while applying power. Press a key promptly to interrupt autoboot and reach the U-Boot prompt.
+9. Once the prompt is available, continue with a bare-metal program, an RTOS, or another boot target.
+
+## Boot Concepts
+
+### Stage 1: ROM Code
+
+The AM335x contains manufacturer-provided Boot ROM code. It loads the SPL (Secondary Program Loader, packaged as `MLO` in this setup) into internal SRAM, noted here as 64 KiB, then jumps to the SPL entry point.
+
+### Stage 2: SPL
+
+The SPL runs from SRAM and loads `u-boot.img` into DRAM. DDR must be initialized before that image can run from DRAM.
+
+### Stage 3: U-Boot
+
+U-Boot can load a kernel into DRAM, optionally together with an FDT and an initial RAM disk. DDR must already be initialized before DRAM is used.
+
+The original notes refer to `u-boot.img` as “TPL”; that label is retained here only as context for the notes.
+
+![BeagleBone Black boot screenshot](../../../img/BBB_BOOT_LOAD.png)
+
+## Recorded Boot Sequence
+
+1. `MLO` initializes DDR, noted here as 512 MB, and loads the accompanying `u-boot.img`.
+2. `u-boot.img` runs and provides a command prompt.
+
+## Options to Explore
+
+- Write a custom `MLO` that initializes DDR and launches the next stage.
+- Use U-Boot to launch a custom RTOS, a bare-metal program, or Linux.

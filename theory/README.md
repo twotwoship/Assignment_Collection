@@ -1,64 +1,61 @@
-## 대한상공회의소 서울교육기술센터 및 자습간 학습한 모든 개념과 이론을 적어보자.
+# Embedded Systems Theory and Study Topics
 
-## 과정 : AI 시스템 반도체 S/W 개발자
+A collection of concepts studied at the KCCI Seoul Technical Education Center and through independent study.
 
-##### 사용해본 보드 : ATMEGA128A STM32_M4 BBB
+**Program:** AI System Semiconductor Software Developer  
+**Boards used:** ATMEGA128A, STM32_M4, BBB
 
-#### 순서 구분은 없다. 생각나는데로 
+The topics below are listed as they came to mind, without a fixed order. They are study prompts, not completed explanations.
 
-* 버스와 통신의 차이는?
-  1. 
-* 버스란 무엇인가?
-메모리 버스란?
-* 통신이란 무엇인가?
+## Concepts to Review
 
-* 직렬통신과 병렬통신의 차이는?
-  1. 직렬통신 :
-  2. 병렬통신 : 
+- What is the difference between a bus and communication?
+- What is a bus? What is a memory bus?
+- What is communication?
+- What is the difference between serial and parallel communication?
+- What are synchronous and asynchronous communication?
+- What is contact bounce?
+- What is DMA?
+- What is a stack?
+- What is a queue?
+- What is conversion to postfix notation?
+- How is a postfix expression evaluated?
+- What are pointers and advanced pointer concepts? What roles do pointers serve?
+- Why is clock division used?
+- What is the difference between polling and interrupts?
+- Why use C?
+- What are the stages of building a C program?
+- How does an ARM CPU boot?
+- What is the difference between a multiprocessor system and multiprocessing?
+- What is the difference between a process and a thread?
+- What is abstraction?
+- Why use `volatile`, `static`, and `const`?
+- How can hardware registers be accessed and controlled directly in C, and why do so?
+- What are frequency and clock signals?
+- How do RAM and ROM work?
+- What is DRAM? How would you explain DRAM with an integrated CPU?
+- How do pull-up, pull-down, push-pull, and open-drain circuits work, and why are they used?
+- What are NPN and PNP transistors?
+- How do the seven OSI layers and four TCP/IP layers work?
+- How are memory addresses calculated, and how does this vary by CPU?
+- What are an ISR and an IRQ?
+- What is a context switch? How, when, and why does it happen?
+- What is the difference between multithreading and multicore processing in actual operation?
+- What are the roles of a bootloader, a kernel, and an operating system such as Linux?
+- Why write a high-level design document, and how should it be structured?
+- What is cross-compilation? How is the environment configured, and why is it needed?
+- What is a toolchain?
+- How do GPUs, CPUs, and NPUs differ?
+- What is parsing?
+- What is a linked list?
 
-* 동기와 비동기란?
-* 채터링이란?
-* DMA란?
-* STACK 이란?
-* Queue 란?
-* 후위변환이란?
-* 후위계산이란?
-* 포인터란? / 고급포인터란? 포인터의 역할은?
-* 분주를 하는 이유?
-* 폴링과 인터럽트 차이
-* c언어를 사용하는 이유
-* c언어의 빌드 과정
-* arm cpu의 부팅 과정
-* 멀티프로세서와 멀티프로세싱의 차이는?
-* 프로세스와 쓰레드의 차이는?
-* 추상화란?
-* volatile static const 의 사용 이유
-* c언어로 하드웨어 레지스터를 직접 접근해서 통제하는 방법은? 그리고 그렇게 하는 이유는?
-* 주파수 클럭이란?
-* RAM과 ROM에 대해 설명을 할수 있냐?
-* DRAM은? CPU가 들어간 DRAM에 대해 설명해라.
-* 풀업과 풀다운 / 푸시풀 / 오픈드레인에 대해 각각 구체적으로 어떻게 동작을 하는지 설명 할 수 있는가? 그리고 왜 사용하는지도 설명이 가능한가?
-* 반도체 npn pnp 트랜지스터란?
-* OSI 7계층 TCP/IP 4계층에 대해 설명이 가능한지?
-* 메모리 주소번지를 계산할 수 있는가? CPU별로 어떻게 계산을 해야 되는가?
-* ISR 이란? IRQ란?
-* 문맥교환이란? 문맥교환은 어떻게 이루어지며 언제 왜 이루어 지는가?
-* 멀티쓰레드와 멀티코어의 차이는 무엇이며 실제로 어떤 부분이 다르게 작동하는지?
-* 부트로더와 커널과 OS(리눅스)의 차이와 역할은?
-* 상위설계서를 작성하는 이유는? 어떻게 작성해야 하는가?
-* 크로스컴파일이란? 크로스컴파일 환경은 어떻게 구성하는지? 크로스컴파일을 왜 하는지?
-* 툴체인이란?
-* GPU CPU NPU 차이는?
-* 파싱이란?
-* 연결리스트란?
-* 
+## Communication Protocols Studied
 
-#### 배운 통신 프로토콜
-몇가닥을 사용하는지? 사용되는 클럭은? 단방향/양방향/전이중인지? 해당 프로토콜에서 사용하는 통신 규약은?
+For each protocol, review the number of wires, the clock source, communication direction and duplex mode, and the protocol rules.
 
-* I2C
-* SPI
-* CAN
-* UART/USART
-* USB
-* UART-USB 연결은 어떻게 되는건지?
+- I2C
+- SPI
+- CAN
+- UART/USART
+- USB
+- How does a UART-to-USB connection work?

@@ -1,39 +1,41 @@
+# BeagleBone Black Reference Documents
 
+## AM335x CPU Reference — 5,118 Pages
 
-CPU 레퍼런스 5118p ★칩 내부 장치와 레지스터 사용 설명서★
+`AM335x and AMIC110 Sitara Processors Technical Reference Manual — SPRUH73Q PDF.pdf`
 
-AM335x and AMIC110 Sitara Processors Technical Reference Manual — SPRUH73Q PDF.pdf
+A reference for on-chip peripherals and registers, and essential reading for running a custom RTOS directly on the BBB.
 
-BBB에 직접 RTOS를 올리려는 목적의 필수 문서
-UART, GPIO, 타이머, 인터럽트 컨트롤러, 클럭, 부트 등 AM3358 주변장치
+Covers AM3358 peripherals, including UART, GPIO, timers, the interrupt controller, clocks, and boot behavior.
 
+## BeagleBone Black Board Reference
 
-BBB 보드 
+`beaglebone-black.pdf`
 
-beaglebone-black.pdf
+Describes the connections between the AM3358 and the BBB's DDR, eMMC, UART, and P8/P9 headers.
 
-AM3358과 BBB의 DDR·eMMC·UART·P8/P9 핀 연결 관계
+## AM3358 Datasheet — 264 Pages
 
+`Sitara processor Arm Cortex-A8, 3D graphics, PRU-ICSS, CAN am3358.pdf`
 
-AM3358 데이터시트: 칩의 외형·핀·전기적 특성 설명서/ 264p
+Describes the chip package, pins, and electrical characteristics.
 
-Sitara processor Arm Cortex-A8, 3D graphics, PRU-ICSS, CAN am3358.pdf
+## ARM Architecture Reference — 2,720 Pages
 
+`ARM Architecture Reference Manual — ARMv7-A and ARMv7-R edition DDI0406C_d_armv7ar_arm`
 
+The BBB's Cortex-A8 implements ARMv7-A, so focus on the ARMv7-A sections.
 
-ARM 명령어, CPU 모드, 예외 모델, 메모리 구조 2720p
+Topics include:
 
-ARM Architecture Reference Manual — ARMv7-A and ARMv7-R edition DDI0406C_d_armv7ar_arm
+- ARM and Thumb instructions
+- CPU modes, including User, Supervisor, IRQ, and FIQ
+- CPSR/SPSR registers and exception/interrupt entry and return
+- Context switching, the MMU, and memory attributes
+- Caches and memory barriers
 
-BBB의 Cortex-A8은 ARMv7-A이므로 문서에서 ARMv7-A 부분을 보면 됨
-ARM/Thumb 명령어, CPU 동작 모드: User, Supervisor, IRQ, FIQ 등
-CPSR/SPSR 레지스터, 예외·인터럽트 진입/복귀
-컨텍스트 스위칭, MMU와 메모리 속성
-캐시와 메모리 배리어
+## Cortex-A8 Reference — 580 Pages
 
+`DDI0344K — Cortex-A8 Technical Reference Manual r3p2 PDF_cortex_a8_r3p2_trm.pdf`
 
-Cortex-A8 580p
-
-DDI0344K — Cortex-A8 Technical Reference Manual r3p2 PDF_cortex_a8_r3p2_trm.pdf
-
-코어, 캐시, MMU, CP15, 예외 처리
+Covers the core, caches, MMU, CP15, and exception handling.

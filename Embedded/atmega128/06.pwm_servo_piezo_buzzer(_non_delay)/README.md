@@ -1,10 +1,8 @@
-so many buuug
+# PWM Servo and Piezo Buzzer Notes
 
-buttom debounceing
+Development notes:
 
-buze buzzer lol
-buze buzzer lloool
-
-i dont know reason buuzze
-
-oscillioscope 
+- Several bugs remain.
+- Button debouncing needs attention.
+- The cause of the unexpected buzzer behavior is still unknown.
+- Oscilloscope investigation is noted as a debugging task.

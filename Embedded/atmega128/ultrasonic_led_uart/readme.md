@@ -1,5 +1,5 @@
-ultrasonic_processing is using time type
+# Ultrasonic Processing Notes
 
-ultrasonic_processing is using flag type
+The notes describe time-based and flag-based approaches to `ultrasonic_processing`.
 
-video is flag type
+The video shows the flag-based approach.

@@ -1,6 +1,6 @@
-used function 
+# Non-Blocking Ultrasonic Trigger Processing
 
-Ignore the comments.
+Function usage and interrupt snippets from the experiment. The original notes advise ignoring the comments.
 
 
 ```c
@@ -32,7 +32,7 @@ void _non_delay_left_make_trigger_processing(void){
 
 ```c
 ISR(TIMER2_OVF_vect){		// 16us timer
-	TCNT2 = 0;				// 0.016/256 카운터 ㅋㅋ 1tik 0.625us
+	TCNT2 = 0;				// 0.016/256 counter; 1 tick = 0.625 us
 	_us_count++;			//  16us timer 
 	if(_us_count> _US_COUNT_RESET){
 		_us_count= 1;		

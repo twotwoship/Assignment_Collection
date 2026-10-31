@@ -1,3 +1,3 @@
-Practical Training Videos Youtube Link
+# Button Practice Videos
 
-https://www.youtube.com/playlist?list=PLj3oVjjEAxxbhLpuPwjdhus77W34dQQ3l
+[Watch the practical training playlist on YouTube](https://www.youtube.com/playlist?list=PLj3oVjjEAxxbhLpuPwjdhus77W34dQQ3l)

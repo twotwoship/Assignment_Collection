@@ -1,29 +1,31 @@
-# STM32 고추건조기 | 온도 측정·히터 
+# STM32 Chili Pepper Dryer | Temperature Measurement and Heater Control
 
- 온도센서, 버튼, 릴레이, FND와 OLED를 연동
+Integrates a temperature sensor, buttons, a relay, a seven-segment display (FND), and an OLED.
 
-## 주요 기능
-- DS18B20 온도 변환 요청·완료 확인 및 측정값 읽기
-- 버튼으로 설정 온도 증가·감소·확정 (0~99 순환)
-- 시작 스위치 상태와 측정 온도에 따른 히터 릴레이 제어
-- TIM3 인터럽트 기반 FND 온도 표시
-- I²C OLED 설정 온도·릴레이 상태 표시와 시작 애니메이션
+## Key Features
 
+- Request DS18B20 temperature conversions, check completion, and read measurements
+- Increase, decrease, and confirm the target temperature using buttons, wrapping between 0 and 99
+- Control the heater relay according to the start switch and measured temperature
+- Display the temperature on the FND through TIM3 interrupts
+- Show the target temperature, relay state, and startup animation on an I²C OLED
 
-## 동작 흐름
+## Workflow
 
-초기화 → OLED 시작 화면 → 버튼 이벤트 처리 → 온도 변환 요청·완료 확인 → 시작 스위치 확인 → 히터 제어. FND 표시는 TIM3 인터럽트에서 수행.
+Initialize → Show the OLED startup screen → Handle button events → Request and check temperature conversion → Check the start switch → Control the heater.
 
-## 하드웨어 연결
+The FND is updated in the TIM3 interrupt handler.
 
-| 기능 | 핀 |
+## Hardware Connections
+
+| Function | Pin |
 |---|---|
-| DS18B20 데이터 | PA3 |
-| 온도 증가 / 확정 / 감소 | PB0 / PB1 / PB2 |
-| 시작 스위치 | PB12 |
-| 히터 릴레이 | PB5 |
+| DS18B20 Data | PA3 |
+| Increase / Confirm / Decrease Temperature | PB0 / PB1 / PB2 |
+| Start Switch | PB12 |
+| Heater Relay | PB5 |
 | LED 1 / 2 | PB6 / PB7 |
 | FND RCLK / DIO / SCLK | PB13 / PB14 / PB15 |
 | OLED I²C2 SCL / SDA | PB10 / PB11 |
 
-- [오제이튜브 참고 영상](https://www.youtube.com/watch?v=YAkAKx72prs): 본인 시연 영상이 아닌 참고 강의
+- [OJ Tube reference video](https://www.youtube.com/watch?v=YAkAKx72prs): A reference tutorial, not a demo of this project.

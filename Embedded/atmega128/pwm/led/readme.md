@@ -1,1 +1,3 @@
-simple ex code led_control
+# LED Control
+
+A simple example of LED control.
