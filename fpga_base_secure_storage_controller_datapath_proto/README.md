@@ -1,6 +1,6 @@
 # [Latest Updates](https://github.com/twotwoship/mini_Cipher_Fabric)
 
-# Zynq SoC 기반 AES-XTS 하드웨어 가속 보안 스토리지 시스템
+# (구형)Zynq SoC 기반 AES-XTS 하드웨어 가속 보안 스토리지 시스템
 
 > Linux 표준 저장장치 암호화·FPGA AES-XTS 가속기 통합 및 개발자 검증 도구 자체 설계 프로젝트
 
