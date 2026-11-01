@@ -60,7 +60,7 @@ Embedded Systems
 
 [Code](https://github.com/twotwoship/2026ESWContest_free_YAKSLOT) · [Demo](https://www.youtube.com/watch?v=20yo6nAbsLM)
 
-#### gochu Dryer · STM32 Temperature Control
+#### Gochu Dryer · STM32 Temperature Control
 
 - Implemented DS18B20 temperature sensing and heater relay control based on the target temperature and start switch.
 - Added button-based temperature settings, TIM interrupt-driven FND updates, and an I²C OLED interface for the target temperature and relay state.
