@@ -60,6 +60,15 @@ Embedded Systems
 
 [Code](https://github.com/twotwoship/2026ESWContest_free_YAKSLOT) · [Demo](https://www.youtube.com/watch?v=20yo6nAbsLM)
 
+#### gochu Dryer · STM32 Temperature Control
+
+- Implemented DS18B20 temperature sensing and heater relay control based on the target temperature and start switch.
+- Added button-based temperature settings, TIM interrupt-driven FND updates, and an I²C OLED interface for the target temperature and relay state.
+
+`C` `STM32` `DS18B20` `Timers & Interrupts` `I²C`
+
+[Code](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/gochu_dry)
+
 ---
 
 ### ⚙️ MCU Projects
@@ -70,7 +79,7 @@ Embedded Systems
 | [ATmega128A Clock & Calculator](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/15.RTC_LCD_calculator_) | DS1307 I²C, LCD/keypad, and stack-based calculation | [Demo](https://www.youtube.com/watch?v=GpRSiZHryco) · [Presentation](https://www.youtube.com/watch?v=l9xRuBvnAL4) |
 | [ATmega128A Bluetooth Car](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/998.auto_car_ver1) | Ultrasonic sensing, Bluetooth commands, and PWM motor control | [Demo](https://www.youtube.com/shorts/NwpaM5rJNO4) |
 | [ATmega128A Washing Machine](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/07.washing_machine) | Wash/rinse/spin states, timers, and UART commands | [Demo](https://www.youtube.com/shorts/kGAorJIMjIk) |
-| [STM32 Chili Pepper Dryer](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/gochu_dry) | Temperature sensing, heater relay, FND, and OLED | — |
+| [STM32 gochu Dryer](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/gochu_dry) | Temperature sensing, heater relay, FND, and OLED | — |
 
 ---
 
