@@ -131,9 +131,6 @@
 ---
 
 ## 7. Embedded Linux / BSP / Device Driver ★
-
-> Linux 기반 임베디드 SW·BSP·드라이버 지원 시 필수
-
 - Linux Kernel / User Space
 - System Call
 - Kernel Module (`.ko`)
