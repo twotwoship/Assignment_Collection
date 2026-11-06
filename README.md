@@ -79,7 +79,7 @@ Embedded Systems
 | [ATmega128A Clock & Calculator](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/15.RTC_LCD_calculator_) | DS1307 I²C, LCD/keypad, and stack-based calculation | [Demo](https://www.youtube.com/watch?v=GpRSiZHryco) · [Presentation](https://www.youtube.com/watch?v=l9xRuBvnAL4) |
 | [ATmega128A Bluetooth Car](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/998.auto_car_ver1) | Ultrasonic sensing, Bluetooth commands, and PWM motor control | [Demo](https://www.youtube.com/shorts/NwpaM5rJNO4) |
 | [ATmega128A Washing Machine](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/atmega128/07.washing_machine) | Wash/rinse/spin states, timers, and UART commands | [Demo](https://www.youtube.com/shorts/kGAorJIMjIk) |
-| [STM32 gochu Dryer](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/gochu_dry) | Temperature sensing, heater relay, FND, and OLED | — |
+| [STM32 gochu Dryer](https://github.com/twotwoship/Assignment_Collection/tree/main/Embedded/gochu_dry) | Temperature sensing, heater relay, FND, and OLED | [Demo](https://youtu.be/-xmNyeOQaqY) |
 
 ---
 
