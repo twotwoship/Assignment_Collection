@@ -89,7 +89,7 @@ Embedded Systems
 |---|---|---|
 | FPGA Clock & Stopwatch | FSM-based RTL design and simulation | [Code](https://github.com/twotwoship/fpga_clock) |
 | FPGA Microwave | FSM-based RTL design and simulation | [Code](https://github.com/twotwoship/fpga_microwave) · [Demo](https://www.youtube.com/watch?v=djOuPST5QnM) |
-| FPGA I2C | FSM-based RTL design and simulation | [Code](https://github.com/twotwoship/fpga_i2c) · [Demo](https://youtu.be/h_Rx22morwA) |
+| FPGA I2C | FSM-based RTL design and simulation | [Code](https://github.com/twotwoship/Assignment_Collection/tree/main/fpga/13_2.fpga_oled_sonic_temper.srcs) · [Demo](https://youtu.be/h_Rx22morwA) |
 | Jetson Rock–Paper–Scissors | Camera input, TensorRT inference, game logic, and Flask/MJPEG streaming | [Code](https://github.com/twotwoship/Assignment_Collection/tree/main/AI_Deep_Learning/%EA%B3%BC%EC%A0%9C%EB%AC%BC%28%EA%B0%80%EC%9C%84%EB%B0%94%EC%9C%84%EB%B3%B4%29) |
 
 The Jetson project has code and models available. Setup instructions and test results still need to be documented.
